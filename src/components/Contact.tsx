@@ -43,7 +43,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="relative py-24 md:py-32 overflow-hidden bg-[#07090E]">
+    <section id="contact" className="relative py-24 md:py-32 overflow-hidden bg-dark-bg">
       {/* Decorative Glows */}
       <div className="absolute top-1/4 left-1/3 -translate-x-1/2 w-[400px] h-[400px] bg-brand-orange/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/3 translate-x-1/2 w-[400px] h-[400px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none" />
@@ -54,7 +54,7 @@ export default function Contact() {
           <span className="text-xs uppercase tracking-[0.3em] text-brand-orange font-bold block mb-4">
             Connect With Us
           </span>
-          <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-white mb-6 uppercase">
+          <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-brand-blue mb-6 uppercase">
             Start Your Progress
           </h2>
           <div className="w-20 h-1 bg-brand-orange mx-auto rounded-full origin-center" />
@@ -72,23 +72,23 @@ export default function Contact() {
               transition={{ duration: 0.8 }}
               className="flex flex-col gap-6"
             >
-              <h3 className="text-2xl font-bold uppercase tracking-wider text-white">
+              <h3 className="text-2xl font-bold uppercase tracking-wider text-brand-blue">
                 CTRL S Workspace
               </h3>
-              <p className="text-slate-400 font-light leading-relaxed">
+              <p className="text-brand-blue/70 font-light leading-relaxed">
                 Have questions or want to tour our luxury space? Drop us a line, send a WhatsApp, or call directly. We are ready to help you save your progress.
               </p>
 
               {/* Info Items */}
               <div className="flex flex-col gap-5 mt-4">
                 {/* Location */}
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-[#0D111A] border border-dark-border/40 hover:border-brand-orange/30 transition-all duration-300">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-[#FAFAFA] border border-brand-blue/20 hover:border-brand-orange/50 transition-all duration-300">
                   <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange flex-shrink-0">
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Location</h4>
-                    <p className="text-sm font-medium text-white leading-relaxed">
+                    <h4 className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60 mb-1">Location</h4>
+                    <p className="text-sm font-medium text-brand-blue leading-relaxed">
                       CTRL S Coworking Space<br />
                       R6 Avenue Avicenne,<br />
                       Facing the Dental Faculty, Monastir, Tunisia
@@ -99,14 +99,14 @@ export default function Contact() {
                 {/* Phone */}
                 <a 
                   href="tel:+21670283230"
-                  className="flex items-start gap-4 p-4 rounded-xl bg-[#0D111A] border border-dark-border/40 hover:border-brand-orange/30 transition-all duration-300 group"
+                  className="flex items-start gap-4 p-4 rounded-xl bg-[#FAFAFA] border border-brand-blue/20 hover:border-brand-orange/50 transition-all duration-300 group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue flex-shrink-0 group-hover:bg-brand-orange/10 group-hover:text-brand-orange transition-colors duration-300">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Phone</h4>
-                    <p className="text-sm font-semibold text-white group-hover:text-brand-orange transition-colors duration-300">
+                    <h4 className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60 mb-1">Phone</h4>
+                    <p className="text-sm font-semibold text-brand-blue group-hover:text-brand-orange transition-colors duration-300">
                       +216 70 283 230
                     </p>
                   </div>
@@ -117,14 +117,14 @@ export default function Contact() {
                   href="https://wa.me/21692277771"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-4 p-4 rounded-xl bg-[#0D111A] border border-dark-border/40 hover:border-brand-orange/30 transition-all duration-300 group"
+                  className="flex items-start gap-4 p-4 rounded-xl bg-[#FAFAFA] border border-brand-blue/20 hover:border-brand-orange/50 transition-all duration-300 group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-[#25D366]/10 flex items-center justify-center text-[#25D366] flex-shrink-0 group-hover:bg-brand-orange/10 group-hover:text-brand-orange transition-colors duration-300">
+                  <div className="w-10 h-10 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue flex-shrink-0 group-hover:bg-brand-orange/10 group-hover:text-brand-orange transition-colors duration-300">
                     <MessageSquare className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">WhatsApp</h4>
-                    <p className="text-sm font-semibold text-white group-hover:text-brand-orange transition-colors duration-300">
+                    <h4 className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60 mb-1">WhatsApp</h4>
+                    <p className="text-sm font-semibold text-brand-blue group-hover:text-brand-orange transition-colors duration-300">
                       +216 92 277 771
                     </p>
                   </div>
@@ -135,20 +135,20 @@ export default function Contact() {
   href="https://www.instagram.com/control.and.study/"
   target="_blank"
   rel="noopener noreferrer"
-  className="flex items-start gap-4 p-4 rounded-xl bg-[#0D111A] border border-dark-border/40 hover:border-brand-orange/30 transition-all duration-300 group"
+  className="flex items-start gap-4 p-4 rounded-xl bg-[#FAFAFA] border border-brand-blue/20 hover:border-brand-orange/50 transition-all duration-300 group"
 >
-  <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-500 flex-shrink-0 group-hover:bg-brand-orange/10 group-hover:text-brand-orange transition-colors duration-300">
+  <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange flex-shrink-0 group-hover:bg-brand-orange/20 transition-colors duration-300">
     <InstagramIcon className="w-5 h-5" />
   </div>
 
   <div>
-    <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+    <h4 className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60 mb-1">
       Instagram
     </h4>
 
     <p 
       translate="no"
-      className="text-sm font-semibold text-white group-hover:text-brand-orange transition-colors duration-300"
+      className="text-sm font-semibold text-brand-blue group-hover:text-brand-orange transition-colors duration-300"
     >
       @control.and.study
     </p>
@@ -158,14 +158,14 @@ export default function Contact() {
                 {/* Email (Editable placeholder) */}
                 <a 
                   href="mailto:contact@controlandstudy.com"
-                  className="flex items-start gap-4 p-4 rounded-xl bg-[#0D111A] border border-dark-border/40 hover:border-brand-orange/30 transition-all duration-300 group"
+                  className="flex items-start gap-4 p-4 rounded-xl bg-[#FAFAFA] border border-brand-blue/20 hover:border-brand-orange/50 transition-all duration-300 group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue flex-shrink-0 group-hover:bg-brand-orange/10 group-hover:text-brand-orange transition-colors duration-300">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">Email</h4>
-                    <p className="text-sm font-semibold text-white group-hover:text-brand-orange transition-colors duration-300">
+                    <h4 className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60 mb-1">Email</h4>
+                    <p className="text-sm font-semibold text-brand-blue group-hover:text-brand-orange transition-colors duration-300">
                       contact@controlandstudy.com
                     </p>
                   </div>
@@ -182,62 +182,62 @@ export default function Contact() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-[#0D111A] border border-dark-border/60 rounded-2xl p-8 relative"
+              className="bg-[#FAFAFA] border border-brand-blue/20 rounded-2xl p-8 relative"
             >
-              <h3 className="text-lg font-bold uppercase tracking-wider text-white mb-6">
+              <h3 className="text-lg font-bold uppercase tracking-wider text-brand-blue mb-6">
                 Send A Message
               </h3>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="name" className="text-xs uppercase tracking-wider font-semibold text-slate-400">Name</label>
+                    <label htmlFor="name" className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60">Name</label>
                     <input
                       type="text"
                       id="name"
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="bg-[#07090E] border border-dark-border/80 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all duration-300"
+                      className="bg-[#FAFAFA] border border-brand-blue/30 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-brand-blue focus:outline-none transition-all duration-300"
                       placeholder="Your Name"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label htmlFor="email" className="text-xs uppercase tracking-wider font-semibold text-slate-400">Email</label>
+                    <label htmlFor="email" className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60">Email</label>
                     <input
                       type="email"
                       id="email"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="bg-[#07090E] border border-dark-border/80 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all duration-300"
+                      className="bg-[#FAFAFA] border border-brand-blue/30 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-brand-blue focus:outline-none transition-all duration-300"
                       placeholder="your@email.com"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="subject" className="text-xs uppercase tracking-wider font-semibold text-slate-400">Subject</label>
+                  <label htmlFor="subject" className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60">Subject</label>
                   <input
                     type="text"
                     id="subject"
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="bg-[#07090E] border border-dark-border/80 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all duration-300"
+                    className="bg-[#FAFAFA] border border-brand-blue/30 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-brand-blue focus:outline-none transition-all duration-300"
                     placeholder="Inquiry or Tour Booking"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="message" className="text-xs uppercase tracking-wider font-semibold text-slate-400">Message</label>
+                  <label htmlFor="message" className="text-xs uppercase tracking-wider font-semibold text-brand-blue/60">Message</label>
                   <textarea
                     id="message"
                     required
                     rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="bg-[#07090E] border border-dark-border/80 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all duration-300 resize-none"
+                    className="bg-[#FAFAFA] border border-brand-blue/30 focus:border-brand-orange/60 rounded-xl px-4 py-3 text-sm text-brand-blue focus:outline-none transition-all duration-300 resize-none"
                     placeholder="Write your message here..."
                   />
                 </div>
@@ -247,8 +247,8 @@ export default function Contact() {
                   disabled={submitted}
                   className={`mt-2 py-4 rounded-xl flex items-center justify-center gap-2 font-bold tracking-wider text-sm transition-all duration-500 cursor-pointer ${
                     submitted
-                      ? "bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                      : "bg-brand-orange text-white hover:bg-brand-orange/95 hover:shadow-[0_0_15px_rgba(214,90,45,0.3)]"
+                      ? "bg-brand-blue text-white shadow-[0_0_15px_rgba(93,120,163,0.3)]"
+                      : "bg-brand-orange text-white hover:bg-brand-orange/95 hover:shadow-[0_0_15px_rgba(196,99,64,0.3)]"
                   }`}
                 >
                   {submitted ? (

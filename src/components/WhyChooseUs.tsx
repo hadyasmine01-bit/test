@@ -33,7 +33,7 @@ const items = [
 
 export default function WhyChooseUs() {
   return (
-    <section id="amenities" className="relative py-24 md:py-32 overflow-hidden bg-[#0a0d14] border-y border-dark-border/20">
+    <section id="amenities" className="relative py-24 md:py-32 overflow-hidden bg-[#FAFAFA] border-y border-brand-blue/20">
       {/* Background Gradients */}
       <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-brand-orange/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none" />
@@ -45,12 +45,12 @@ export default function WhyChooseUs() {
             <span className="text-xs uppercase tracking-[0.3em] text-brand-orange font-bold block mb-4">
               Why Choose Us
             </span>
-            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-white uppercase leading-tight">
+            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-brand-blue uppercase leading-tight">
               An Elevated standard of Work & Study
             </h2>
           </div>
           <div className="h-0.5 bg-dark-border flex-grow mx-8 hidden lg:block" />
-          <p className="text-slate-400 font-light max-w-sm md:text-right leading-relaxed">
+          <p className="text-brand-blue/70 font-light max-w-sm md:text-right leading-relaxed">
             Every feature at CTRL S is designed to eliminate friction, helping you lock in your daily achievements seamlessly.
           </p>
         </div>
@@ -67,24 +67,24 @@ export default function WhyChooseUs() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 whileHover={{ y: -8 }}
-                className="group relative bg-[#0D111A] border border-dark-border/60 hover:border-brand-orange/40 rounded-2xl p-8 transition-all duration-500 shadow-[0_10px_30px_rgba(0,0,0,0.15)] flex flex-col justify-between overflow-hidden"
+                className="group relative bg-[#FAFAFA] border border-brand-blue/20 hover:border-brand-orange/60 rounded-2xl p-8 transition-all duration-500 shadow-[0_10px_30px_rgba(93,120,163,0.12)] flex flex-col justify-between overflow-hidden"
               >
                 {/* Glow Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/0 via-transparent to-brand-blue/0 group-hover:from-brand-orange/5 group-hover:to-brand-blue/5 transition-all duration-500 pointer-events-none" />
 
                 <div>
                   {/* Card Icon */}
-                  <div className="w-12 h-12 rounded-xl bg-brand-orange/10 border border-brand-orange/20 flex items-center justify-center text-brand-orange mb-8 transition-all duration-500 group-hover:scale-110 group-hover:bg-brand-orange group-hover:text-white group-hover:shadow-[0_0_15px_rgba(214,90,45,0.4)]">
+                  <div className="w-12 h-12 rounded-xl bg-brand-orange/10 border border-brand-orange/20 flex items-center justify-center text-brand-orange mb-8 transition-all duration-500 group-hover:scale-110 group-hover:bg-brand-orange group-hover:text-white group-hover:shadow-[0_0_15px_rgba(196,99,64,0.4)]">
                     <Icon className="w-6 h-6" />
                   </div>
 
                   {/* Card Title */}
-                  <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-4 transition-colors duration-300 group-hover:text-brand-orange">
+                  <h3 className="text-lg font-bold text-brand-blue uppercase tracking-wider mb-4 transition-colors duration-300 group-hover:text-brand-orange">
                     {card.title}
                   </h3>
 
                   {/* Card Description */}
-                  <p className="text-sm text-slate-400 font-light leading-relaxed mb-6">
+                  <p className="text-sm text-brand-blue/70 font-light leading-relaxed mb-6">
                     {card.desc}
                   </p>
                 </div>

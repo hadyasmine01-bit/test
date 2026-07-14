@@ -17,6 +17,7 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const headerTextColor = scrolled ? "text-brand-blue" : "text-brand-orange";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,7 +56,7 @@ export default function Navbar() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-[#07090E]/80 backdrop-blur-md border-b border-dark-border/50 py-4"
+            ? "bg-[#FAFAFA]/90 backdrop-blur-md border-b border-brand-blue/20 py-4"
             : "bg-transparent py-6"
         }`}
       >
@@ -67,7 +68,7 @@ export default function Navbar() {
           >
             <div className="relative w-10 h-10 overflow-hidden flex items-center justify-center">
               <Image
-                src="/assets/logo.png"
+                src="/assets/logo-2-colors-transparent.png"
                 alt="Control and Study Logo"
                 fill
                 className="object-contain transition-transform duration-500 group-hover:scale-105"
@@ -75,10 +76,10 @@ export default function Navbar() {
               />
             </div>
             <div className="flex flex-col items-start leading-none notranslate" translate="no">
-              <span className="text-lg font-bold tracking-widest text-white uppercase font-sans">
+              <span className={`text-lg font-bold tracking-widest uppercase font-sans ${headerTextColor}`}>
                 CONTROL & STUDY
               </span>
-              <span className="text-[10px] tracking-[0.25em] text-brand-orange font-medium mt-0.5">
+              <span className={`text-[10px] tracking-[0.25em] font-medium mt-0.5 ${scrolled ? "text-brand-orange" : "text-brand-orange/80"}`}>
                 CTRL S
               </span>
             </div>
@@ -90,7 +91,7 @@ export default function Navbar() {
               <button
                 key={link.name}
                 onClick={() => scrollToSection(link.href.substring(1))}
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors duration-300 relative py-2 group cursor-pointer"
+                className={`text-sm font-medium hover:text-brand-orange transition-colors duration-300 relative py-2 group cursor-pointer ${scrolled ? "text-brand-blue/80" : "text-brand-orange"}`}
               >
                 {link.name}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover:w-full" />
@@ -102,7 +103,7 @@ export default function Navbar() {
           <div className="hidden md:block">
             <button
               onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-transparent border border-brand-orange hover:bg-brand-orange text-white text-sm font-semibold transition-all duration-500 hover:shadow-[0_0_15px_rgba(214,90,45,0.3)] group cursor-pointer"
+              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-transparent border border-brand-orange hover:bg-brand-orange hover:text-white text-sm font-semibold transition-all duration-500 hover:shadow-[0_0_15px_rgba(196,99,64,0.3)] group cursor-pointer ${headerTextColor}`}
             >
               Contact Us
               <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -113,7 +114,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white hover:text-brand-orange transition-colors duration-300 focus:outline-none"
+              className={`${headerTextColor} hover:text-brand-orange transition-colors duration-300 focus:outline-none`}
               aria-label="Toggle Menu"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -130,7 +131,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 top-[72px] z-40 bg-[#07090E] border-t border-dark-border/40 md:hidden flex flex-col justify-between px-6 py-12"
+            className="fixed inset-0 top-[72px] z-40 bg-[#FAFAFA] border-t border-brand-blue/20 md:hidden flex flex-col justify-between px-6 py-12"
           >
             <div className="flex flex-col gap-6">
               {navLinks.map((link, idx) => (
@@ -140,7 +141,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => scrollToSection(link.href.substring(1))}
-                  className="text-left text-2xl font-semibold text-slate-300 hover:text-white transition-colors duration-300 border-b border-dark-border/20 pb-4"
+                  className="text-left text-2xl font-semibold text-brand-blue hover:text-brand-orange transition-colors duration-300 border-b border-brand-blue/20 pb-4"
                 >
                   {link.name}
                 </motion.button>
@@ -159,7 +160,7 @@ export default function Navbar() {
               >
                 Contact Us
               </button>
-              <div className="text-center text-xs text-slate-500">
+              <div className="text-center text-xs text-brand-blue/60">
                 © {new Date().getFullYear()} <span translate="no" className="notranslate">Control and Study</span>. All rights reserved.
               </div>
             </motion.div>

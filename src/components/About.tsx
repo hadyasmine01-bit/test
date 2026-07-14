@@ -29,7 +29,7 @@ const pillars = [
 
 export default function About() {
   return (
-    <section id="about" className="relative py-24 md:py-32 overflow-hidden bg-[#07090E]">
+    <section id="about" className="relative py-24 md:py-32 overflow-hidden bg-[#FAFAFA]">
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[300px] h-[300px] bg-brand-blue/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[250px] h-[250px] bg-brand-orange/5 rounded-full blur-[80px] pointer-events-none" />
@@ -51,7 +51,7 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-3xl md:text-5xl font-semibold tracking-tight text-white mb-6 uppercase"
+            className="text-3xl md:text-5xl font-semibold tracking-tight text-brand-blue mb-6 uppercase"
           >
             Where Ambition Meets Design
           </motion.h2>
@@ -74,16 +74,16 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-7 flex flex-col justify-center"
           >
-            <h3 className="font-serif italic text-2xl md:text-3xl text-brand-blue mb-6 font-light leading-relaxed">
+            <h3 className="font-[family-name:var(--font-league-spartan)] text-2xl md:text-3xl text-brand-blue mb-6 font-light leading-relaxed">
               We help you lock in your success and <span translate="no" className="notranslate">&ldquo;Save Your Progress&rdquo;</span> at every step.
             </h3>
             
-            <div className="text-slate-300 font-light space-y-6 leading-relaxed mb-10">
+            <div className="text-brand-blue/80 font-light space-y-6 leading-relaxed mb-10">
               <p>
-                At <strong className="text-white font-semibold notranslate" translate="no">Control and Study (CTRL S)</strong>, we redefine the modern workspace. We believe that where you work directly impacts your potential. Our space is built for students, freelancers, and businesses who refuse to compromise on quality and focus.
+                At <strong className="text-brand-blue font-semibold notranslate" translate="no">Control and Study (CTRL S)</strong>, we believe that the right environment can make all the difference. Designed primarily for students, our space offers a calm, comfortable, and inspiring atmosphere where you can stay focused, prepare for exams, complete assignments, and achieve your academic goals.
               </p>
               <p>
-                Nestled facing the Dental Faculty in Monastir, we bridge the gap between academic focus and professional networking. Whether you are coding your next software release, studying for clinical exams, or drafting a startup plan, our space serves as the ultimate catalog for your daily milestones.
+                Located opposite the Dental Faculty in Monastir, CTRL S is more than just a study space. It also welcomes freelancers, remote workers, and creative professionals looking for a productive place to work, collaborate, and bring their ideas to life. Whether you&apos;re revising for your next exam, attending online classes, or working on your latest project, CTRL S provides the space to help you do your best work.
               </p>
             </div>
 
@@ -104,10 +104,10 @@ export default function About() {
                       <IconComponent className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-1.5 transition-colors duration-300 group-hover:text-brand-orange">
+                      <h4 className="text-sm font-semibold text-brand-blue uppercase tracking-wider mb-1.5 transition-colors duration-300 group-hover:text-brand-orange">
                         {item.title}
                       </h4>
-                      <p className="text-xs text-slate-400 font-light leading-relaxed">
+                      <p className="text-xs text-brand-blue/70 font-light leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -125,10 +125,10 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="lg:col-span-5 relative"
           >
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-dark-border shadow-[0_20px_40px_rgba(0,0,0,0.5)] group">
-              <div className="absolute inset-0 bg-[#07090E]/10 z-10 transition-colors duration-500 group-hover:bg-transparent" />
+            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-dark-border shadow-[0_20px_40px_rgba(93,120,163,0.3)] group">
+              <div className="absolute inset-0 bg-brand-blue/10 z-10 transition-colors duration-500 group-hover:bg-transparent" />
               <Image 
-                src="/assets/about-collab.jpg"
+                src="/assets/about-collab.png"
                 alt="Control & Study Collaboration Hub"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -139,8 +139,8 @@ export default function About() {
             <div className="absolute -bottom-6 -left-6 bg-dark-card border border-dark-border p-5 rounded-xl shadow-2xl flex items-center gap-4 z-20 backdrop-blur-md max-w-xs">
               <span className="text-4xl font-extrabold text-brand-orange leading-none font-serif">100%</span>
               <div className="leading-tight">
-                <p className="text-xs uppercase font-bold text-white tracking-wider">Goal Oriented</p>
-                <p className="text-[10px] text-slate-400 font-light mt-0.5">Designed to foster focus, research, and career breakthroughs.</p>
+                <p className="text-xs uppercase font-bold text-brand-blue tracking-wider">Goal Oriented</p>
+                <p className="text-[10px] text-brand-blue/70 font-light mt-0.5">Designed to foster focus, research, and career breakthroughs.</p>
               </div>
             </div>
           </motion.div>

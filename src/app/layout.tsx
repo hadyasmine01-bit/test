@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Playfair_Display } from "next/font/google";
+import { League_Spartan, Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -11,6 +11,12 @@ const outfit = Outfit({
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
+  display: "swap",
+});
+
+const leagueSpartan = League_Spartan({
+  subsets: ["latin"],
+  variable: "--font-league-spartan",
   display: "swap",
 });
 
@@ -51,9 +57,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${playfair.variable} scroll-smooth h-full antialiased`}
+      className={`${outfit.variable} ${playfair.variable} ${leagueSpartan.variable} scroll-smooth h-full antialiased`}
     >
-      <body className="bg-[#07090E] text-slate-100 font-sans selection:bg-[#D65A2D] selection:text-white min-h-full flex flex-col">
+      <body className="bg-dark-bg text-brand-blue font-sans selection:bg-brand-orange selection:text-white min-h-full flex flex-col">
         {children}
       </body>
     </html>

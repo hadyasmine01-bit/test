@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Send, MessageSquare, Phone } from "lucide-react";
+import { motion } from "framer-motion";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -33,19 +34,21 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#05070a] border-t border-dark-border/40 py-16">
+    <footer className="relative overflow-hidden bg-brand-blue border-t border-brand-blue/40 py-16">
+      <div className="pointer-events-none absolute -left-20 top-0 h-60 w-60 rounded-full border border-white/10 animate-drift" />
+      <div className="pointer-events-none absolute -bottom-28 right-8 h-80 w-80 rounded-full bg-brand-orange/10 blur-[100px] animate-float" />
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center">
         
         {/* Main Footer Brand Info */}
-        <div className="flex flex-col items-center text-center gap-6 mb-12">
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.65 }} className="flex flex-col items-center text-center gap-6 mb-12">
           {/* Logo & Name */}
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={scrollToTop}>
-            <div className="relative w-12 h-12 overflow-hidden flex items-center justify-center">
+          <button type="button" className="flex items-center gap-3 cursor-pointer group" onClick={scrollToTop} aria-label="Back to top">
+            <div className="relative h-16 w-[154px] overflow-hidden rounded-xl bg-[#FAFAFA] px-2 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition-transform duration-500 group-hover:scale-105">
               <Image
-                src="/assets/logo.png"
+                src="/assets/logo-2-colors-trim.png"
                 alt="Control and Study Logo"
                 fill
-                className="object-contain transition-transform duration-500 group-hover:scale-105"
+                className="object-contain p-1"
               />
             </div>
             <div className="flex flex-col items-start leading-none text-left">
@@ -56,25 +59,25 @@ export default function Footer() {
                 CTRL S
               </span>
             </div>
-          </div>
+          </button>
 
           {/* Slogan */}
-          <p className="font-serif italic text-lg text-brand-blue tracking-wide">
+          <p className="font-serif italic text-lg text-white tracking-wide">
             &ldquo;Save Your Progress&rdquo;
           </p>
 
-          <p className="text-sm text-slate-500 max-w-md font-light leading-relaxed mt-2">
+          <p className="text-sm text-[#FAFAFA]/80 max-w-md font-light leading-relaxed mt-2">
             A sanctuary of learning, development, and networking facing the Dental Faculty in Monastir. Empowering students and professionals alike.
           </p>
-        </div>
+        </motion.div>
 
         {/* Social Links */}
-        <div className="flex items-center gap-6 mb-12">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.12 }} className="flex items-center gap-6 mb-12">
           <a
             href="https://www.instagram.com/control.and.study/"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full border border-dark-border/80 flex items-center justify-center text-slate-400 hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-orange/5 transition-all duration-300"
+            className="w-10 h-10 rounded-full border border-[#FAFAFA]/50 flex items-center justify-center text-[#FAFAFA]/80 hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-orange/5 transition-all duration-300"
             aria-label="Instagram"
           >
             <InstagramIcon className="w-5 h-5" />
@@ -83,39 +86,39 @@ export default function Footer() {
             href="https://wa.me/21692277771"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full border border-dark-border/80 flex items-center justify-center text-slate-400 hover:text-[#25D366] hover:border-[#25D366]/50 hover:bg-[#25D366]/5 transition-all duration-300"
+            className="w-10 h-10 rounded-full border border-[#FAFAFA]/50 flex items-center justify-center text-[#FAFAFA]/80 hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-orange/5 transition-all duration-300"
             aria-label="WhatsApp"
           >
             <MessageSquare className="w-5 h-5" />
           </a>
           <a
             href="tel:+21670283230"
-            className="w-10 h-10 rounded-full border border-dark-border/80 flex items-center justify-center text-slate-400 hover:text-brand-blue hover:border-brand-blue/50 hover:bg-brand-blue/5 transition-all duration-300"
+            className="w-10 h-10 rounded-full border border-[#FAFAFA]/50 flex items-center justify-center text-[#FAFAFA]/80 hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-orange/5 transition-all duration-300"
             aria-label="Phone"
           >
             <Phone className="w-5 h-5" />
           </a>
           <a
             href="mailto:contact@controlandstudy.com"
-            className="w-10 h-10 rounded-full border border-dark-border/80 flex items-center justify-center text-slate-400 hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-orange/5 transition-all duration-300"
+            className="w-10 h-10 rounded-full border border-[#FAFAFA]/50 flex items-center justify-center text-[#FAFAFA]/80 hover:text-brand-orange hover:border-brand-orange/50 hover:bg-brand-orange/5 transition-all duration-300"
             aria-label="Email"
           >
             <Send className="w-5 h-5" />
           </a>
-        </div>
+        </motion.div>
 
         {/* Separator line */}
-        <div className="w-full max-w-4xl h-[1px] bg-dark-border/50 mb-8" />
+        <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="w-full max-w-4xl h-[1px] origin-center bg-white/25 mb-8" />
 
         {/* Bottom copyright and meta links */}
-        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl gap-4 text-xs text-slate-600 font-light">
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.18 }} className="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl gap-4 text-xs text-[#FAFAFA]/70 font-light">
           <p>© {currentYear} Control and Study. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#about" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
-            <a href="#about" className="hover:text-slate-400 transition-colors">Terms of Service</a>
-            <button onClick={scrollToTop} className="hover:text-slate-400 transition-colors cursor-pointer">Back to Top ↑</button>
+            <a href="#about" className="hover:text-brand-orange transition-colors">Privacy Policy</a>
+            <a href="#about" className="hover:text-brand-orange transition-colors">Terms of Service</a>
+            <button onClick={scrollToTop} className="hover:text-brand-orange transition-colors cursor-pointer">Back to Top ↑</button>
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </footer>
