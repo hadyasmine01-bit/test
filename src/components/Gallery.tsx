@@ -6,16 +6,10 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 
 const galleryItems = [
-  "IMG_1480", "IMG_1481", "IMG_1482", "IMG_1483", "IMG_1541", "IMG_1542", "IMG_1543",
-  "IMG_1544", "IMG_1545", "IMG_1548", "IMG_1550", "IMG_1638", "IMG_2206", "IMG_2412",
+  "IMG_1480", "IMG_1481", "IMG_1482", "IMG_1541", "IMG_1542", "IMG_1543", "IMG_1544", "IMG_1548", "IMG_2412",
 ].map((name, index) => ({
   title: `Control & Study space ${index + 1}`,
   src: `/assets/gallery/${name}.jpg`,
-  className: [
-    "md:col-span-5 md:row-span-2", "md:col-span-3", "md:col-span-4", "md:col-span-3 md:row-span-2",
-    "md:col-span-4", "md:col-span-5", "md:col-span-4 md:row-span-2", "md:col-span-3", "md:col-span-5",
-    "md:col-span-3 md:row-span-2", "md:col-span-4", "md:col-span-5", "md:col-span-3", "md:col-span-4",
-  ][index],
 }));
 
 export default function Gallery() {
@@ -47,23 +41,33 @@ export default function Gallery() {
           <motion.div whileInView={{ scaleX: [0, 1] }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }} className="mx-auto h-1 w-20 origin-center rounded-full bg-brand-orange" />
         </motion.div>
 
-        <div className="grid auto-rows-[190px] grid-cols-1 gap-4 sm:grid-cols-2 md:auto-rows-[170px] md:grid-cols-12 md:gap-5 lg:auto-rows-[210px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {galleryItems.map((item, index) => (
             <motion.button
               key={item.src}
               type="button"
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: Math.min(index * 0.04, 0.35) }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.06 }}
               onClick={() => setSelectedIndex(index)}
-              className={`group relative overflow-hidden rounded-2xl border border-brand-blue/15 text-left shadow-sm transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-orange/40 ${item.className}`}
+              className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-brand-blue/15 bg-white text-left shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-orange/40 cursor-pointer"
               aria-label={`Open ${item.title}`}
             >
-              <Image src={item.src} alt={item.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw" />
-              <span className="absolute inset-0 bg-brand-blue/45 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              <span className="absolute right-4 top-4 flex h-10 w-10 translate-y-2 items-center justify-center rounded-full bg-white/90 text-brand-blue opacity-0 shadow-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                <Maximize2 className="h-4 w-4" />
+              <Image 
+                src={item.src} 
+                alt={item.title} 
+                fill 
+                className="object-cover transition-transform duration-700 group-hover:scale-108" 
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
+              />
+              
+              {/* Subtle hover overlay without any text */}
+              <div className="absolute inset-0 bg-black/15 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+              {/* Maximize Icon Badge */}
+              <span className="absolute right-4 top-4 flex h-10 w-10 translate-y-2 items-center justify-center rounded-full bg-white/90 text-brand-blue opacity-0 shadow-md transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                <Maximize2 className="h-4 w-4 text-brand-orange" />
               </span>
             </motion.button>
           ))}

@@ -1,7 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { ArrowDown } from "lucide-react";
+import Image from "next/image";
+
+import SlideToUnlock from "./SlideToUnlock";
 
 export default function Hero() {
   const scrollToContact = () => {
@@ -36,149 +39,138 @@ export default function Hero() {
     }
   };
 
-  const titleWords = ["Control", "and", "Study"];
-  const particles = [
-    { left: "12%", top: "22%", size: 7, delay: 0 },
-    { left: "84%", top: "19%", size: 5, delay: 0.8 },
-    { left: "76%", top: "74%", size: 8, delay: 1.6 },
-    { left: "20%", top: "76%", size: 4, delay: 2.3 },
-  ];
+  // Ultra-fluid, subtle floating animation for the centered logo
+  const fluidLogoVariants: Variants = {
+    animate: {
+      y: [0, -4, 0, 4, 0],
+      scale: [1, 1.015, 1, 0.99, 1],
+      transition: {
+        duration: 6,
+        repeat: Infinity,
+        ease: "easeInOut" as const,
+      }
+    }
+  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-blue">
-      {/* Background Image with Parallax & Overlay */}
+      {/* Background Image with Parallax & Optimization */}
       <motion.div
-        animate={{ scale: [1.05, 1.12, 1.05], x: [0, -8, 0], y: [0, 6, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ 
-          backgroundImage: "url('/assets/hero-bg.jpg')",
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-brand-blue via-brand-blue/65 to-brand-blue/40" />
-
-      {/* Animated home atmosphere */}
-      <motion.div aria-hidden="true" animate={{ rotate: 360 }} transition={{ duration: 36, repeat: Infinity, ease: "linear" }} className="pointer-events-none absolute -right-24 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full border border-white/15" />
-      <motion.div aria-hidden="true" animate={{ rotate: -360 }} transition={{ duration: 28, repeat: Infinity, ease: "linear" }} className="pointer-events-none absolute -left-28 top-[18%] h-[310px] w-[310px] rounded-full border border-brand-orange/35 border-dashed" />
-      {particles.map((particle) => (
-        <motion.span
-          key={`${particle.left}-${particle.top}`}
-          aria-hidden="true"
-          className="pointer-events-none absolute rounded-full bg-brand-orange shadow-[0_0_18px_rgba(196,99,64,0.9)]"
-          style={{ left: particle.left, top: particle.top, width: particle.size, height: particle.size }}
-          animate={{ y: [0, -18, 0], opacity: [0.25, 1, 0.25], scale: [0.8, 1.35, 0.8] }}
-          transition={{ duration: 4.5, delay: particle.delay, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ scale: [1.03, 1.08, 1.03], x: [0, -4, 0], y: [0, 3, 0] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" as const }}
+        className="absolute inset-0 z-0"
+      >
+        <Image
+          src="/assets/bachground.png"
+          alt="Control and Study Background"
+          fill
+          priority
+          className="object-cover object-center pointer-events-none"
+          sizes="100vw"
         />
-      ))}
+      </motion.div>
+      <div className="absolute inset-0 z-[1] bg-black/15 bg-gradient-to-t from-brand-blue/40 via-transparent to-brand-blue/20" />
 
-      {/* Decorative Brand Color Glows */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-brand-orange/10 rounded-full blur-[100px] pointer-events-none animate-drift" />
-      <div className="absolute bottom-1/3 right-1/4 translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] bg-brand-blue/15 rounded-full blur-[120px] pointer-events-none animate-float" />
-
-      {/* Content - z-20 pour passer devant le dégradé */}
-      <div className="relative z-20 max-w-5xl mx-auto px-6 md:px-12 text-center flex flex-col items-center pb-24">
-        {/* Top Tagline */}
+      {/* Main Central Content Container */}
+      <div className="relative z-10 flex flex-col items-center justify-center gap-10 max-w-5xl mx-auto px-6 md:px-12 text-center pb-12 pt-20">
+        
+        {/* Animated Central White Circle */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-6"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-[330px] lg:h-[330px] rounded-full bg-white flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-white/60 overflow-hidden"
         >
-          <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse" />
-          <span className="text-xs uppercase tracking-[0.25em] text-[#FAFAFA]/80 font-semibold">
-            Luxury Coworking & Study Lounge
-          </span>
-        </motion.div>
-
-        {/* Brand Name Title - Each word on a new line */}
-        <h1 className="text-5xl md:text-8xl font-bold tracking-tight text-white mb-6 uppercase leading-tight font-sans">
-          {titleWords.map((word, index) => (
-            <motion.span
-              key={word}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 1, 
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.3 + index * 0.15 
-              }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FAFAFA] via-[#FAFAFA] to-[#FAFAFA]/70 notranslate"
-              translate="no"
-            >
-              {word}
-            </motion.span>
-          ))}
-        </h1>
-
-        {/* Slogan - League Spartan font */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, delay: 0.9 }}
-          className="mb-8"
-        >
-          <p 
-            className="text-shimmer text-2xl md:text-4xl text-brand-orange tracking-wide notranslate uppercase"
-            translate="no"
-            style={{ fontFamily: "'League Spartan', sans-serif", fontWeight: 700 }}
-          >
-            &ldquo;Save Your Progress&rdquo;
-          </p>
-        </motion.div>
-
-        {/* Short Premium Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.1 }}
-          className="text-base md:text-lg text-[#FAFAFA]/80 max-w-xl mx-auto mb-10 leading-relaxed font-light"
-        >
-          An inspiring study space created for ambitious students. Experience a quiet, comfortable environment designed to boost concentration, encourage collaboration, and help you perform at your best.
-        </motion.p>
-
-        {/* CTA Buttons - z-30 pour être au-dessus de tout */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.3 }}
-          className="relative z-30 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
-        >
-          <motion.button
-            onClick={scrollToContact}
-            whileHover={{ scale: 1.05, y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-white font-bold tracking-wide hover:bg-brand-orange/90 transition-all duration-300 hover:shadow-[0_0_20px_rgba(196,99,64,0.4)] cursor-pointer"
-          >
-            Contact Us
-          </motion.button>
+          {/* Subtle Inner Glow */}
+          <div className="absolute inset-0 rounded-full bg-radial from-white via-white/90 to-transparent pointer-events-none z-[1]" />
           
+          {/* Centered Logo Canvas */}
+          <div className="relative w-[85%] h-[85%] flex items-center justify-center z-[2]">
+            
+            {/* Centered Logo with Ultra-Fluid Micro-Movement & Optical Offset */}
+            <motion.div
+              variants={fluidLogoVariants}
+              animate="animate"
+              className="relative w-full h-full flex items-center justify-center -translate-y-2.5 sm:-translate-y-3 md:-translate-y-4"
+            >
+              <div className="relative w-[92%] h-[92%]">
+                <Image
+                  src="/assets/yasmin-trimmed.png"
+                  alt="Control and Study Logo"
+                  fill
+                  className="object-contain pointer-events-none"
+                  priority
+                />
+              </div>
+            </motion.div>
+
+          </div>
+        </motion.div>
+
+        {/* iPhone Slide to Unlock CTA Swiper Widget */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto"
+        >
+          <SlideToUnlock onSuccess={scrollToContact} label="slide to save progress" />
+
           <motion.button
             onClick={scrollToAbout}
-            whileHover={{ scale: 1.05, y: -3 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold tracking-wide border border-white/10 transition-all duration-300 backdrop-blur-sm cursor-pointer"
+            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold tracking-wide border border-white/25 transition-all duration-300 backdrop-blur-md cursor-pointer text-xs font-lemon-milk uppercase shadow-[0_4px_15px_rgba(0,0,0,0.1)]"
           >
-            Explore <span translate="no" className="notranslate">CTRL S</span>
+            Explore CTRL S
           </motion.button>
         </motion.div>
       </div>
 
-      {/* Floating Bottom Scroll Indicator - z-30 aussi */}
+      {/* Floating Bottom Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 1, 0] }}
         transition={{ repeat: Infinity, duration: 2, delay: 1.5 }}
         onClick={scrollToAbout}
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 cursor-pointer"
+        className="absolute bottom-7 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 cursor-pointer"
       >
-        <span className="text-[10px] uppercase tracking-[0.3em] text-brand-blue/75 font-medium">
+        <span className="text-[10px] uppercase tracking-[0.3em] text-white/60 font-medium">
           Scroll Down
         </span>
         <ArrowDown className="w-4 h-4 text-brand-orange" />
       </motion.div>
 
-      {/* Fade gradient - z-15 pour rester sous les boutons */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-[15] h-40 bg-gradient-to-b from-transparent via-[#FAFAFA]/45 to-[#FAFAFA] md:h-56" />
+      {/* Signature Capital 'S' Curve Section Divider */}
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-[6] pointer-events-none overflow-hidden leading-none">
+        <svg
+          viewBox="0 0 1440 180"
+          className="relative block w-full h-20 sm:h-28 md:h-36 lg:h-44"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="s-curve-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#C46340" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#C46340" stopOpacity="0.8" />
+            </linearGradient>
+          </defs>
+          {/* Subtle glowing accent tracing the signature S-curve */}
+          <path
+            d="M 0,35 C 380,185 340,-15 720,90 C 1100,195 1060,5 1440,145"
+            fill="none"
+            stroke="url(#s-curve-accent)"
+            strokeWidth="3.5"
+            className="opacity-80"
+          />
+          {/* S-shaped divider fill blending smoothly into About section background (#FAFAFA) */}
+          <path
+            d="M 0,35 C 380,185 340,-15 720,90 C 1100,195 1060,5 1440,145 L 1440,180 L 0,180 Z"
+            fill="#FAFAFA"
+          />
+        </svg>
+      </div>
     </section>
   );
 }

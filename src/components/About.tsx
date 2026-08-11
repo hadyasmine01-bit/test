@@ -8,22 +8,22 @@ const pillars = [
   {
     icon: Compass,
     title: "Productive Environment",
-    desc: "Meticulously sound-insulated and designed to help you maintain deep focus, free from distraction."
+    desc: "meticulously sound-insulated and designed to help you maintain deep focus, free from distraction."
   },
   {
     icon: BookOpen,
     title: "Learning & Innovation",
-    desc: "Equipped with state-of-the-art labs and resources to nurture academic research and technical projects."
+    desc: "equipped with state-of-the-art labs and resources to nurture academic research and technical projects."
   },
   {
     icon: ShieldCheck,
     title: "Comfortable Workspace",
-    desc: "Ergonomic seating, customizable desks, and climate control ensuring maximum physical comfort."
+    desc: "ergonomic seating, customizable desks, and climate control ensuring maximum physical comfort."
   },
   {
     icon: Users,
     title: "Vibrant Community",
-    desc: "Connect and network with ambitious peers, students, and professionals in Monastir."
+    desc: "connect and network with ambitious peers, students, and professionals in monastir."
   }
 ];
 
@@ -78,12 +78,12 @@ export default function About() {
               We help you lock in your success and <span translate="no" className="notranslate">&ldquo;Save Your Progress&rdquo;</span> at every step.
             </h3>
             
-            <div className="text-brand-blue/80 font-light space-y-6 leading-relaxed mb-10">
+            <div className="text-brand-blue/80 font-light space-y-6 leading-relaxed mb-10 lowercase">
               <p>
-                At <strong className="text-brand-blue font-semibold notranslate" translate="no">Control and Study (CTRL S)</strong>, we believe that the right environment can make all the difference. Designed primarily for students, our space offers a calm, comfortable, and inspiring atmosphere where you can stay focused, prepare for exams, complete assignments, and achieve your academic goals.
+                at <strong className="text-brand-blue font-semibold notranslate" translate="no">Control and Study (CTRL S)</strong>, we believe that the right environment can make all the difference. designed primarily for students, our space offers a calm, comfortable, and inspiring atmosphere where you can stay focused, prepare for exams, complete assignments, and achieve your academic goals.
               </p>
               <p>
-                Located opposite the Dental Faculty in Monastir, CTRL S is more than just a study space. It also welcomes freelancers, remote workers, and creative professionals looking for a productive place to work, collaborate, and bring their ideas to life. Whether you&apos;re revising for your next exam, attending online classes, or working on your latest project, CTRL S provides the space to help you do your best work.
+                located opposite the dental faculty in monastir, <span className="notranslate" translate="no">CTRL S</span> is more than just a study space. it also welcomes freelancers, remote workers, and creative professionals looking for a productive place to work, collaborate, and bring their ideas to life. whether you&apos;re revising for your next exam, attending online classes, or working on your latest project, <span className="notranslate" translate="no">CTRL S</span> provides the space to help you do your best work.
               </p>
             </div>
 
@@ -107,7 +107,7 @@ export default function About() {
                       <h4 className="text-sm font-semibold text-brand-blue uppercase tracking-wider mb-1.5 transition-colors duration-300 group-hover:text-brand-orange">
                         {item.title}
                       </h4>
-                      <p className="text-xs text-brand-blue/70 font-light leading-relaxed">
+                      <p className="text-xs text-brand-blue/70 font-light leading-relaxed lowercase">
                         {item.desc}
                       </p>
                     </div>
@@ -128,8 +128,8 @@ export default function About() {
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-dark-border shadow-[0_20px_40px_rgba(93,120,163,0.3)] group">
               <div className="absolute inset-0 bg-brand-blue/10 z-10 transition-colors duration-500 group-hover:bg-transparent" />
               <Image 
-                src="/assets/about-collab.png"
-                alt="Control & Study Collaboration Hub"
+                src="/assets/gallery/IMG_1541.jpg"
+                alt="Control & Study Workspace"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -140,7 +140,7 @@ export default function About() {
               <span className="text-4xl font-extrabold text-brand-orange leading-none font-serif">100%</span>
               <div className="leading-tight">
                 <p className="text-xs uppercase font-bold text-brand-blue tracking-wider">Goal Oriented</p>
-                <p className="text-[10px] text-brand-blue/70 font-light mt-0.5">Designed to foster focus, research, and career breakthroughs.</p>
+                <p className="text-[10px] text-brand-blue/70 font-light mt-0.5 lowercase">designed to foster focus, research, and career breakthroughs.</p>
               </div>
             </div>
           </motion.div>

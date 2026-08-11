@@ -1,73 +1,61 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-orange: #C46340;
   --color-brand-blue: #5D78A3;
-  --color-brand-blue-dark: #5D78A3;
-  --color-dark-bg: #FAFAFA;
-  --color-dark-card: #FAFAFA;
-  --color-dark-border: #5D78A3;
-  
-  --font-sans: var(--font-outfit), sans-serif;
-  --font-serif: var(--font-playfair), serif;
+  --color-brand-orange: #C46340;
+  --color-dark-card: #0a0e17;
+  --color-dark-border: #1a1f2e;
 }
 
-@layer base {
-  body {
-    background-color: var(--color-dark-bg);
-    color: #5D78A3;
-  }
+/* Lemon Milk Font */
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/assets/fonts/LEMONMILK-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Custom premium scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #FAFAFA;
-}
-::-webkit-scrollbar-thumb {
-  background: #5D78A3;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #C46340;
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/assets/fonts/LEMONMILK-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Custom smooth text animation */
-.clip-text-reveal {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+@font-face {
+  font-family: 'Lemon Milk';
+  src: url('/assets/fonts/LEMONMILK-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
-.brand-grid {
-  background-image: linear-gradient(rgba(93, 120, 163, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(93, 120, 163, 0.055) 1px, transparent 1px);
-  background-size: 38px 38px;
+/* Base styles */
+body {
+  font-family: 'Outfit', var(--font-outfit), sans-serif;
 }
 
-@keyframes float {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-  50% { transform: translate3d(0, -18px, 0) rotate(4deg); }
+/* Utility classes */
+.font-lemon-milk {
+  font-family: 'Lemon Milk', sans-serif;
 }
 
-@keyframes drift {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(24px, -14px, 0) scale(1.08); }
+.font-outfit {
+  font-family: 'Outfit', var(--font-outfit), sans-serif;
 }
 
-.animate-float { animation: float 8s ease-in-out infinite; }
-.animate-drift { animation: drift 12s ease-in-out infinite; }
-
-@keyframes text-shimmer {
-  0%, 100% { text-shadow: 0 0 0 rgba(255, 255, 255, 0); filter: brightness(1); }
-  50% { text-shadow: 0 0 18px rgba(196, 99, 64, 0.7); filter: brightness(1.18); }
+/* Lowercase for paragraphs */
+p, .paragraph-text {
+  font-family: 'Outfit', var(--font-outfit), sans-serif;
+  text-transform: lowercase;
 }
 
-.text-shimmer { animation: text-shimmer 3.5s ease-in-out infinite; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-  }
+/* Keep uppercase for titles and keywords */
+h1, h2, h3, h4, h5, h6,
+.font-title,
+.uppercase-keyword {
+  font-family: 'Lemon Milk', sans-serif;
+  text-transform: uppercase;
 }

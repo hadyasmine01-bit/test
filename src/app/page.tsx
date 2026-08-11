@@ -6,6 +6,8 @@ import Services from "@/components/Services";
 import Gallery from "@/components/Gallery";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import FocusSoundPlayer from "@/components/FocusSoundPlayer";
+import ProgressSavedModal from "@/components/ProgressSavedModal";
 
 export default function Home() {
   return (
@@ -20,6 +22,8 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <FocusSoundPlayer />
+      <ProgressSavedModal />
     </>
   );
 }
