@@ -4,19 +4,21 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Pricing", href: "#pricing" },
-  { name: "Services", href: "#services" },
-  { name: "Gallery", href: "#gallery" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", href: "/#home" },
+  { name: "About", href: "/#about" },
+  { name: "Services", href: "/#services" },
+  { name: "Study Hub", href: "/#hub" },
+  { name: "Gallery", href: "/#gallery" },
+  { name: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -24,14 +26,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = (href: string) => {
     setIsOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 80;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      window.scrollTo({ top: elementRect - bodyRect - offset, behavior: "smooth" });
+    if (href.startsWith("/#") && pathname === "/") {
+      const id = href.replace("/#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        window.scrollTo({ top: elementRect - bodyRect - offset, behavior: "smooth" });
+      }
+    } else {
+      window.location.href = href;
     }
   };
 
@@ -43,14 +50,14 @@ export default function Navbar() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-sm border-b border-gray-200 py-4"
+            ? "bg-white/95 backdrop-blur-sm border-b border-gray-200 py-4 shadow-sm"
             : "bg-transparent py-6"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
           
           {/* Logo */}
-          <button onClick={() => scrollToSection("home")} className="flex items-center cursor-pointer group shrink-0">
+          <button onClick={() => scrollToSection("/#home")} className="flex items-center cursor-pointer group shrink-0">
             {!scrolled ? (
               <div className="relative h-10 w-48 shrink-0">
                 <Image
@@ -80,7 +87,7 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <button
                 key={link.name}
-                onClick={() => scrollToSection(link.href.substring(1))}
+                onClick={() => scrollToSection(link.href)}
                 className={`text-sm font-medium uppercase tracking-wide whitespace-nowrap transition-colors duration-300 relative py-2 group cursor-pointer font-lemon-milk shrink-0 ${
                   scrolled ? "text-brand-blue hover:text-brand-orange" : "text-brand-orange hover:text-white"
                 }`}
@@ -91,17 +98,24 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Contact Button */}
-          <div className="hidden md:block shrink-0">
+          {/* Hub & Contact Buttons */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
+            <Link
+              href="/hub"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-orange/15 hover:bg-brand-orange text-brand-orange hover:text-white border border-brand-orange/40 text-xs font-bold uppercase tracking-wider transition-all font-lemon-milk"
+            >
+              <span>Study tools</span>
+            </Link>
+
             <button
-              onClick={() => scrollToSection("contact")}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold uppercase tracking-wide whitespace-nowrap transition-all duration-500 hover:shadow-[0_0_15px_rgba(196,99,64,0.3)] group cursor-pointer font-lemon-milk shrink-0 ${
+              onClick={() => scrollToSection("/#contact")}
+              className={`inline-flex -translate-y-1 items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold uppercase tracking-wide whitespace-nowrap transition-all duration-500 hover:shadow-[0_0_15px_rgba(196,99,64,0.3)] group cursor-pointer font-lemon-milk shrink-0 ${
                 scrolled
                   ? "border-brand-orange text-brand-blue hover:bg-brand-orange hover:text-white"
                   : "border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white"
               }`}
             >
-              Contact Us
+              Contact us
               <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </div>
@@ -138,19 +152,26 @@ export default function Navbar() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  onClick={() => scrollToSection(link.href.substring(1))}
+                  onClick={() => scrollToSection(link.href)}
                   className="text-left text-xl font-semibold text-brand-blue hover:text-brand-orange transition-colors duration-300 border-b border-gray-200 pb-4 font-lemon-milk uppercase tracking-wide"
                 >
                   {link.name}
                 </motion.button>
               ))}
             </div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex flex-col gap-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex flex-col gap-4">
+              <Link
+                href="/hub"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-3.5 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-center font-bold font-lemon-milk uppercase tracking-wide"
+              >
+                Focus and study tools
+              </Link>
               <button 
-                onClick={() => scrollToSection("contact")} 
+                onClick={() => scrollToSection("/#contact")} 
                 className="w-full py-4 rounded-full bg-brand-orange text-white text-center font-bold hover:bg-brand-orange/95 transition-all duration-300 font-lemon-milk uppercase tracking-wide"
               >
-                Contact Us
+                Contact us
               </button>
             </motion.div>
           </motion.div>

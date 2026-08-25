@@ -1,215 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Clock, Code2, Coffee, Laptop, Printer, Sparkles, Grid, Eye } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { CheckCircle2, Clock, Coffee, Laptop, Printer, Sparkles, VolumeX, Zap } from "lucide-react";
 import Image from "next/image";
 
-const services = [
-  { 
-    id: "outdoor",
-    icon: Laptop, 
-    title: "Outdoor Zone", 
-    image: "/assets/outdoor.png", 
-    desc: "A refreshing open-air space for breaks, brainstorming, and recharging between focused sessions.", 
-    highlight: "Hot desks & workstations" 
-  },
-  { 
-    id: "indoor",
-    icon: Laptop, 
-    title: "Indoor Zone", 
-    image: "/assets/indoor.png", 
-    desc: "A calm, spacious interior with cozy corners and shared seating for deep work or peaceful collaboration.", 
-    highlight: "Focus-ready seating" 
-  },
-  { 
-    id: "lab",
-    icon: Code2, 
-    title: "The Lab", 
-    image: "/assets/lab.png", 
-    desc: "A silent and cozy room made for comfort, focus, and peace when you need to truly lock in.", 
-    highlight: "Comfort & silence" 
-  },
-  { 
-    id: "247",
-    icon: Clock, 
-    title: "24/7 Access", 
-    image: "/assets/247.png", 
-    desc: "Work or study on your own terms with secure smart access, day or night.", 
-    highlight: "Keyless digital access" 
-  },
-  { 
-    id: "cafe",
-    icon: Coffee, 
-    title: "Specialty Coffee", 
-    image: "/assets/cafe.png", 
-    desc: "Refuel in our modern espresso bar with premium roasted beans and comfort beverages.", 
-    highlight: "Coffee, served daily" 
-  },
-  { 
-    id: "print",
-    icon: Printer, 
-    title: "Professional Printing", 
-    image: "/assets/print.png", 
-    desc: "High-speed printing, copying, and document services integrated into your workday.", 
-    highlight: "Colour & high-volume printing" 
-  },
-];
+type Locale = "en" | "fr";
+type Service = { id: string; icon: typeof Laptop; badge: string; title: string; image: string; description: string; features: string[]; highlight: string };
+
+const services: Record<Locale, Service[]> = {
+  en: [
+    { id: "outdoor", icon: Laptop, badge: "Open Air & Nature", title: "Outdoor Zone", image: "/assets/outdoor.png", description: "A bright outdoor space designed for active breaks, creative brainstorming, and focused work in the fresh air.", features: ["Outdoor desks with dedicated power outlets", "High-speed Wi-Fi 6 coverage", "Calm, shaded relaxation area"], highlight: "Open-air workstations" },
+    { id: "indoor", icon: Zap, badge: "Deep Work & Comfort", title: "Indoor Focus Zone", image: "/assets/indoor.png", description: "A spacious, air-conditioned, ergonomic environment for long study sessions and focused revision.", features: ["High-performance ergonomic chairs", "Eye-comfort lighting", "Quiet study atmosphere"], highlight: "Ergonomic workstations" },
+    { id: "lab", icon: VolumeX, badge: "Silence & Focus", title: "The Lab", image: "/assets/lab.png", description: "A fully silent, acoustically isolated room for anyone who needs uninterrupted focus to code or prepare for exams.", features: ["Enhanced sound insulation", "Immersive individual desks", "Distraction-free focus"], highlight: "Absolute silence" },
+    { id: "247", icon: Clock, badge: "Complete Flexibility", title: "24/7 Smart Access", image: "/assets/247.png", description: "Study and work on your own schedule with secure access to the space at any time, every day.", features: ["Secure smartphone access", "24/7 security monitoring", "Open nights, weekends, and holidays"], highlight: "Access day and night" },
+    { id: "cafe", icon: Coffee, badge: "Energy & Breaks", title: "Specialty Coffee Bar", image: "/assets/cafe.png", description: "Enjoy specialty coffee, infusions, and refreshments to keep your concentration going.", features: ["Specialty espresso and lattes", "Tea and cold-drink selection", "Healthy snacks"], highlight: "Specialty coffee" },
+    { id: "print", icon: Printer, badge: "Tools & Essentials", title: "High-Speed Print & Scan", image: "/assets/print.png", description: "Handle academic and administrative needs on site with high-speed printing, HD scanning, and report binding.", features: ["High-volume colour and black-and-white printing", "Wireless HD scanner", "Binding and stationery supplies"], highlight: "Wireless print & HD scan" },
+  ],
+  fr: [
+    { id: "outdoor", icon: Laptop, badge: "Plein air & nature", title: "Zone extérieure", image: "/assets/outdoor.png", description: "Un espace extérieur lumineux conçu pour les pauses actives, le brainstorming créatif et le travail en plein air.", features: ["Bureaux extérieurs avec prises dédiées", "Couverture Wi-Fi 6 haut débit", "Espace de détente calme et ombragé"], highlight: "Postes de travail en plein air" },
+    { id: "indoor", icon: Zap, badge: "Concentration & confort", title: "Zone de concentration intérieure", image: "/assets/indoor.png", description: "Un espace spacieux, climatisé et ergonomique pour les longues sessions d'étude et les révisions.", features: ["Chaises ergonomiques performantes", "Éclairage confortable pour les yeux", "Ambiance calme et studieuse"], highlight: "Postes de travail ergonomiques" },
+    { id: "lab", icon: VolumeX, badge: "Silence & concentration", title: "The Lab", image: "/assets/lab.png", description: "Une salle totalement silencieuse et isolée acoustiquement pour coder ou préparer ses examens sans interruption.", features: ["Isolation phonique renforcée", "Bureaux individuels immersifs", "Concentration sans distraction"], highlight: "Silence absolu" },
+    { id: "247", icon: Clock, badge: "Flexibilité totale", title: "Accès intelligent 24/7", image: "/assets/247.png", description: "Étudiez et travaillez à votre rythme grâce à un accès sécurisé à l'espace à toute heure, chaque jour.", features: ["Accès sécurisé par smartphone", "Surveillance 24h/24 et 7j/7", "Ouvert la nuit, le week-end et les jours fériés"], highlight: "Accès jour et nuit" },
+    { id: "cafe", icon: Coffee, badge: "Énergie & pauses", title: "Bar à café de spécialité", image: "/assets/cafe.png", description: "Profitez de cafés de spécialité, d'infusions et de rafraîchissements pour soutenir votre concentration.", features: ["Espresso de spécialité et lattes", "Sélection de thés et boissons fraîches", "Snacks sains"], highlight: "Café de spécialité" },
+    { id: "print", icon: Printer, badge: "Outils & essentiels", title: "Impression et scan rapides", image: "/assets/print.png", description: "Gérez vos besoins académiques et administratifs sur place : impression rapide, scan HD et reliure de rapports.", features: ["Impression couleur et noir et blanc grand volume", "Scanner HD sans fil", "Matériel de reliure et papeterie"], highlight: "Impression sans fil & scan HD" },
+  ],
+};
+
+const copy = {
+  en: { eyebrow: "Our spaces & amenities", title: "Designed for your success", description: "Discover a complete environment combining ergonomic comfort, quiet workspaces, and modern technology opposite the Faculty of Dentistry in Monastir." },
+  fr: { eyebrow: "Nos espaces & équipements", title: "Conçu pour votre réussite", description: "Découvrez un environnement complet combinant confort ergonomique, espaces calmes et technologies modernes face à la Faculté Dentaire de Monastir." },
+};
 
 export default function Services() {
-  const [activeTile, setActiveTile] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"puzzle" | "cards">("puzzle");
+  const [locale, setLocale] = useState<Locale>("en");
+  useEffect(() => { if (navigator.language.toLowerCase().startsWith("fr")) setLocale("fr"); }, []);
+  const text = copy[locale];
 
-  return (
-    <section id="services" className="relative overflow-hidden bg-[#FAFAFA] py-24 md:py-32">
-      {/* Background Gradients */}
-      <div className="pointer-events-none absolute left-[10%] top-20 h-72 w-72 rounded-full bg-brand-orange/5 blur-[100px]" />
-      <div className="pointer-events-none absolute bottom-20 right-[10%] h-80 w-80 rounded-full bg-brand-blue/5 blur-[120px]" />
-
-      <div className="relative mx-auto max-w-7xl px-6 md:px-12">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-12 md:mb-16 gap-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center md:text-left"
-          >
-            <span className="mb-2 block text-xs font-bold uppercase tracking-[0.3em] text-brand-orange font-lemon-milk">
-              Our Ecosystem
-            </span>
-            <h2 className="text-3xl font-semibold uppercase tracking-tight text-brand-blue md:text-5xl font-lemon-milk">
-              Tailored for Progress
-            </h2>
-          </motion.div>
-
-          {/* Creative Toggle: Seamless Puzzle vs Interactive Cards */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="flex items-center gap-1.5 p-1.5 rounded-full bg-white border border-brand-blue/20 shadow-sm"
-          >
-            <button
-              onClick={() => setViewMode("puzzle")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer font-lemon-milk ${
-                viewMode === "puzzle"
-                  ? "bg-brand-orange text-white shadow-sm"
-                  : "text-brand-blue hover:text-brand-orange"
-              }`}
-            >
-              <Grid className="w-3.5 h-3.5" />
-              Puzzle Grid
-            </button>
-            <button
-              onClick={() => setViewMode("cards")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer font-lemon-milk ${
-                viewMode === "cards"
-                  ? "bg-brand-orange text-white shadow-sm"
-                  : "text-brand-blue hover:text-brand-orange"
-              }`}
-            >
-              <Eye className="w-3.5 h-3.5" />
-              Cards View
-            </button>
-          </motion.div>
-        </div>
-
-        {/* 3x2 Puzzle Grid Display */}
-        <motion.div layout className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === "puzzle" ? "gap-2.5 md:gap-3.5" : "gap-6 md:gap-8"}`}>
-          {services.map((service, index) => {
-            const Icon = service.icon;
-            const isHovered = activeTile === service.id;
-
-            return (
-              <motion.article
-                key={service.id}
-                layout
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.06 }}
-                onMouseEnter={() => setActiveTile(service.id)}
-                onMouseLeave={() => setActiveTile(null)}
-                onClick={() => setActiveTile(activeTile === service.id ? null : service.id)}
-                className={`group relative aspect-square w-full overflow-hidden rounded-2xl border transition-all duration-500 cursor-pointer shadow-sm ${
-                  viewMode === "puzzle"
-                    ? "border-brand-blue/15 hover:border-brand-orange/60 hover:shadow-xl hover:z-20"
-                    : "border-brand-blue/20 bg-white hover:shadow-2xl hover:-translate-y-1.5"
-                }`}
-              >
-                {/* 100% Complete 1:1 Square Image - Zero Cropping on Sides */}
-                <div className="relative w-full h-full bg-[#f4f5f7]">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    priority={index < 3}
-                    className="object-cover object-center w-full h-full transition-transform duration-700 group-hover:scale-[1.03]"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                </div>
-
-                {/* Default Bottom Title Bar (Visible when not hovered) */}
-                <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-5 transition-opacity duration-300 ${
-                  isHovered || viewMode === "cards" ? "opacity-0" : "opacity-100"
-                }`}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold uppercase tracking-wider text-white font-lemon-milk drop-shadow">
-                      {service.title}
-                    </span>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-white backdrop-blur-md">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interactive Glassmorphic Hover Overlay (Fully Crisp & Ultra-Legible) */}
-                <AnimatePresence>
-                  {(isHovered || viewMode === "cards") && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.25 }}
-                      className="absolute inset-0 bg-[#5D78A3]/92 backdrop-blur-md p-6 sm:p-7 flex flex-col justify-between z-10 text-white"
-                    >
-                      {/* Top Header */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-orange text-white shadow-md">
-                          <Icon className="h-6 w-6" />
-                        </div>
-                        <Sparkles className="h-5 w-5 text-brand-orange" />
-                      </div>
-
-                      {/* Content */}
-                      <div className="my-auto">
-                        <h3 className="text-xl font-bold uppercase tracking-wider text-white mb-2 font-lemon-milk">
-                          {service.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm leading-relaxed text-white/90 font-light">
-                          {service.desc}
-                        </p>
-                      </div>
-
-                      {/* Bottom Tag & Action */}
-                      <div className="flex items-center justify-between border-t border-white/25 pt-3">
-                        <span className="inline-block rounded-full bg-brand-orange px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
-                          {service.highlight}
-                        </span>
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-brand-blue group-hover:bg-brand-orange group-hover:text-white transition-colors duration-300">
-                          <ArrowUpRight className="h-4 w-4" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.article>
-            );
-          })}
-        </motion.div>
-      </div>
-    </section>
-  );
+  return <section id="services" className="relative overflow-hidden bg-[#FAFAFA] py-24 md:py-32">
+    <div className="pointer-events-none absolute left-[5%] top-20 h-96 w-96 rounded-full bg-brand-orange/5 blur-[120px]" />
+    <div className="pointer-events-none absolute bottom-20 right-[5%] h-96 w-96 rounded-full bg-brand-blue/5 blur-[120px]" />
+    <div className="relative mx-auto max-w-7xl px-6 md:px-12">
+      <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20"><motion.span initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-3 inline-flex items-center gap-2 rounded-full border border-brand-orange/20 bg-brand-orange/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-brand-orange font-lemon-milk"><Sparkles className="h-3.5 w-3.5" />{text.eyebrow}</motion.span><motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-5 text-3xl font-semibold uppercase tracking-tight text-brand-blue md:text-5xl font-lemon-milk">{text.title}</motion.h2><motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mx-auto max-w-2xl text-sm font-light leading-relaxed text-brand-blue/75 md:text-base">{text.description}</motion.p><div className="mx-auto mt-6 h-1 w-20 rounded-full bg-brand-orange" /></div>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">{services[locale].map((service, index) => { const Icon = service.icon; return <motion.article key={service.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.08 }} className="group flex flex-col overflow-hidden rounded-2xl border border-brand-blue/15 bg-white shadow-[0_4px_20px_rgba(93,120,163,0.06)] transition-all duration-300 hover:border-brand-orange/60"><div className="relative h-52 w-full overflow-hidden bg-slate-100"><Image src={service.image} alt={service.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" /><div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" /><span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/50 bg-white/95 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-blue shadow-sm font-lemon-milk"><Icon className="h-3.5 w-3.5 text-brand-orange" />{service.badge}</span><h3 className="absolute bottom-4 left-4 right-4 text-xl font-bold uppercase tracking-wide text-white drop-shadow-md font-lemon-milk">{service.title}</h3></div><div className="flex flex-grow flex-col justify-between gap-5 p-6 sm:p-7"><p className="text-sm font-light leading-relaxed text-brand-blue/85">{service.description}</p><div className="space-y-2.5 border-t border-brand-blue/10 pt-2">{service.features.map((feature) => <div key={feature} className="flex items-start gap-2.5"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-orange" /><span className="text-xs font-medium leading-tight text-brand-blue">{feature}</span></div>)}</div><div className="flex items-center justify-between border-t border-brand-blue/10 pt-3"><span className="inline-flex items-center gap-1.5 rounded-full bg-brand-orange/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-orange font-lemon-milk"><Sparkles className="h-3 w-3" />{service.highlight}</span><span className="text-xs font-bold text-brand-blue/60 font-lemon-milk">CTRL S</span></div></div></motion.article>; })}</div>
+    </div>
+  </section>;
 }

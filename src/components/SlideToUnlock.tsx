@@ -7,11 +7,13 @@ import { ChevronsRight, Check } from "lucide-react";
 interface SlideToUnlockProps {
   onSuccess?: () => void;
   label?: string;
+  className?: string;
 }
 
 export default function SlideToUnlock({
   onSuccess,
-  label = "slide to save progress",
+  label = "slide to explore CTRL S",
+  className = "",
 }: SlideToUnlockProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [maxDrag, setMaxDrag] = useState(200);
@@ -34,17 +36,17 @@ export default function SlideToUnlock({
   }, []);
 
   // Text opacity fades as user drags right
-  const textOpacity = useTransform(x, [0, maxDrag * 0.6], [1, 0.1]);
+  const textOpacity = useTransform(x, [0, Math.max(1, maxDrag * 0.6)], [1, 0.05]);
 
   const handleDragEnd = () => {
     const currentX = x.get();
-    if (currentX >= maxDrag * 0.85) {
+    if (currentX >= maxDrag * 0.78) {
       setUnlocked(true);
       if (onSuccess) onSuccess();
       setTimeout(() => {
         setUnlocked(false);
         x.set(0);
-      }, 2000);
+      }, 1800);
     } else {
       x.set(0);
     }
@@ -53,15 +55,15 @@ export default function SlideToUnlock({
   return (
     <div
       ref={containerRef}
-      className="relative w-72 sm:w-80 h-14 rounded-full bg-black/40 border border-white/25 backdrop-blur-xl p-1 shadow-[0_10px_30px_rgba(0,0,0,0.3)] overflow-hidden flex items-center select-none"
+      className={`relative w-[310px] sm:w-[360px] md:w-[390px] max-w-[90vw] h-14 rounded-full bg-black/45 border border-white/30 backdrop-blur-xl p-1 shadow-[0_10px_35px_rgba(0,0,0,0.4)] overflow-hidden flex items-center select-none ${className}`}
     >
       {/* Animated Shimmer Background Text */}
       <motion.span
         style={{ opacity: textOpacity }}
-        className="absolute inset-0 flex items-center justify-center text-xs font-bold uppercase tracking-[0.2em] text-white/90 font-lemon-milk pointer-events-none pl-6"
+        className="absolute inset-0 flex items-center justify-center text-[10.5px] sm:text-xs font-bold uppercase tracking-[0.16em] sm:tracking-[0.2em] text-white/95 font-lemon-milk pointer-events-none pl-12 pr-4 text-center truncate"
       >
         <span className="bg-gradient-to-r from-white/70 via-white to-white/70 bg-clip-text text-transparent animate-pulse">
-          {unlocked ? "unlocked!" : label}
+          {unlocked ? "entering spinview..." : label}
         </span>
       </motion.span>
 
@@ -74,10 +76,10 @@ export default function SlideToUnlock({
         style={{ x }}
         onDragEnd={handleDragEnd}
         animate={unlocked ? { x: maxDrag } : undefined}
-        className={`z-10 w-12 h-12 rounded-full flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing transition-colors duration-300 ${
+        className={`z-10 w-12 h-12 rounded-full flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing transition-colors duration-300 shrink-0 ${
           unlocked
-            ? "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.6)]"
-            : "bg-brand-orange text-white hover:bg-brand-orange/90 shadow-[0_0_15px_rgba(196,99,64,0.5)]"
+            ? "bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.7)]"
+            : "bg-brand-orange text-white hover:bg-brand-orange/90 shadow-[0_0_15px_rgba(196,99,64,0.6)]"
         }`}
       >
         {unlocked ? (
