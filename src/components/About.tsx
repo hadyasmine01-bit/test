@@ -136,8 +136,8 @@ export default function About() {
             </div>
             
             {/* Absolute Decorative Tag */}
-            <div className="absolute -bottom-6 -left-6 bg-dark-card border border-dark-border p-5 rounded-xl shadow-2xl flex items-center gap-4 z-20 backdrop-blur-md max-w-xs">
-              <span className="text-4xl font-extrabold text-brand-orange leading-none font-serif">100%</span>
+            <div className="absolute -bottom-6 left-2 sm:-left-6 bg-dark-card border border-dark-border p-4 sm:p-5 rounded-xl shadow-2xl flex items-center gap-3 sm:gap-4 z-20 backdrop-blur-md max-w-[calc(100%-1rem)] sm:max-w-xs">
+              <span className="text-3xl sm:text-4xl font-extrabold text-brand-orange leading-none font-serif">100%</span>
               <div className="leading-tight">
                 <p className="text-xs uppercase font-bold text-brand-blue tracking-wider">Goal Oriented</p>
                 <p className="text-[10px] text-brand-blue/70 font-light mt-0.5 lowercase">designed to foster focus, research, and career breakthroughs.</p>

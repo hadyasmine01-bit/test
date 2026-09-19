@@ -6,25 +6,61 @@ import { Menu, X, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-const navLinks = [
+const defaultNavLinks = [
   { name: "Home", href: "/#home" },
   { name: "About", href: "/#about" },
   { name: "Services", href: "/#services" },
   { name: "Study Hub", href: "/#hub" },
   { name: "Gallery", href: "/#gallery" },
+  { name: "Pricing", href: "/#pricing" },
   { name: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isFr, setIsFr] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const checkLang = () => {
+      try {
+        const stored = localStorage.getItem("ctrl_s_lang");
+        if (stored) {
+          setIsFr(stored === "fr");
+          return;
+        }
+        if (
+          document.documentElement.lang.toLowerCase().startsWith("fr") ||
+          (typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("fr"))
+        ) {
+          setIsFr(true);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    checkLang();
+    window.addEventListener("storage", checkLang);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", checkLang);
+    };
   }, []);
+
+  const navLinks = [
+    { name: "Home", href: "/#home" },
+    { name: "About", href: "/#about" },
+    { name: "Services", href: "/#services" },
+    { name: "Study Hub", href: "/#hub" },
+    { name: "Gallery", href: "/#gallery" },
+    { name: isFr ? "Tarifs" : "Pricing", href: "/#pricing" },
+    { name: "Contact", href: "/#contact" },
+  ];
 
   const scrollToSection = (href: string) => {
     setIsOpen(false);
@@ -108,14 +144,14 @@ export default function Navbar() {
             </Link>
 
             <button
-              onClick={() => scrollToSection("/#contact")}
+              onClick={() => scrollToSection("/#pricing")}
               className={`inline-flex -translate-y-1 items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold uppercase tracking-wide whitespace-nowrap transition-all duration-500 hover:shadow-[0_0_15px_rgba(196,99,64,0.3)] group cursor-pointer font-lemon-milk shrink-0 ${
                 scrolled
                   ? "border-brand-orange text-brand-blue hover:bg-brand-orange hover:text-white"
                   : "border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white"
               }`}
             >
-              Contact us
+              {isFr ? "Tarifs" : "Pricing"}
               <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </div>
@@ -143,35 +179,35 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 top-[72px] z-40 bg-white border-t border-gray-200 md:hidden flex flex-col justify-between px-6 py-12"
+            className="fixed inset-0 top-[72px] z-40 bg-white border-t border-gray-200 md:hidden flex flex-col justify-between px-6 py-8 overflow-y-auto max-h-[calc(100dvh-72px)] gap-8"
           >
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               {navLinks.map((link, idx) => (
                 <motion.button
                   key={link.name}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
+                  transition={{ delay: idx * 0.04 }}
                   onClick={() => scrollToSection(link.href)}
-                  className="text-left text-xl font-semibold text-brand-blue hover:text-brand-orange transition-colors duration-300 border-b border-gray-200 pb-4 font-lemon-milk uppercase tracking-wide"
+                  className="text-left text-lg font-semibold text-brand-blue hover:text-brand-orange transition-colors duration-300 border-b border-gray-100 pb-3 font-lemon-milk uppercase tracking-wide cursor-pointer"
                 >
                   {link.name}
                 </motion.button>
               ))}
             </div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex flex-col gap-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="flex flex-col gap-3 pb-6 shrink-0">
               <Link
                 href="/hub"
                 onClick={() => setIsOpen(false)}
-                className="w-full py-3.5 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-center font-bold font-lemon-milk uppercase tracking-wide"
+                className="w-full py-3.5 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-center font-bold font-lemon-milk uppercase tracking-wide text-xs"
               >
                 Focus and study tools
               </Link>
               <button 
-                onClick={() => scrollToSection("/#contact")} 
-                className="w-full py-4 rounded-full bg-brand-orange text-white text-center font-bold hover:bg-brand-orange/95 transition-all duration-300 font-lemon-milk uppercase tracking-wide"
+                onClick={() => scrollToSection("/#pricing")} 
+                className="w-full py-3.5 rounded-full bg-brand-orange text-white text-center font-bold hover:bg-brand-orange/95 transition-all duration-300 font-lemon-milk uppercase tracking-wide text-xs cursor-pointer shadow-sm"
               >
-                Contact us
+                {isFr ? "Tarifs" : "Pricing"}
               </button>
             </motion.div>
           </motion.div>

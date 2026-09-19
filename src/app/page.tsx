@@ -4,6 +4,7 @@ import About from "@/components/About";
 import Services from "@/components/Services";
 import CreativeCoworkHub from "@/components/CreativeCoworkHub";
 import Gallery from "@/components/Gallery";
+import Pricing from "@/components/Pricing";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import ProgressSavedModal from "@/components/ProgressSavedModal";
@@ -18,6 +19,7 @@ export default function Home() {
         <Services />
         <CreativeCoworkHub />
         <Gallery />
+        <Pricing />
         <Contact />
       </main>
       <Footer />
