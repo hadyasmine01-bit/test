@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,7 +8,6 @@ import {
   Timer, 
   CheckSquare, 
   Users, 
-  Headphones, 
   FileText, 
   ArrowLeft, 
   Play, 
@@ -17,14 +16,11 @@ import {
   Plus, 
   Trash2, 
   Check, 
-  Volume2, 
-  VolumeX, 
   Copy, 
   Download, 
   Sparkles, 
   Share2, 
   Flame, 
-  Clock, 
   Radio, 
   StickyNote, 
   ShieldCheck, 
@@ -37,19 +33,17 @@ import {
   Heart,
   Maximize2,
   X,
-  MapPin
+  MapPin,
+  Sliders,
+  Award,
+  CheckCircle2,
+  Database,
+  Cloud
 } from "lucide-react";
 
 // Web Audio API Synthesizer for 100% reliable offline / local sound generation
 class AmbientAudioEngine {
   private ctx: AudioContext | null = null;
-  private nodes: { [key: string]: { source?: AudioNode; gainNode?: GainNode; isPlaying: boolean } } = {
-    rain: { isPlaying: false },
-    coffee: { isPlaying: false },
-    waves: { isPlaying: false },
-    whitenoise: { isPlaying: false },
-    alpha: { isPlaying: false },
-  };
 
   private initContext() {
     if (!this.ctx) {
@@ -82,107 +76,6 @@ class AmbientAudioEngine {
     osc.start(now);
     osc.stop(now + 1.8);
   }
-
-  public setSound(soundKey: string, active: boolean, volume: number) {
-    this.initContext();
-    if (!this.ctx) return;
-
-    if (!active) {
-      if (this.nodes[soundKey]?.gainNode) {
-        this.nodes[soundKey].gainNode!.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
-        this.nodes[soundKey].isPlaying = false;
-      }
-      return;
-    }
-
-    if (this.nodes[soundKey]?.isPlaying) {
-      if (this.nodes[soundKey].gainNode) {
-        this.nodes[soundKey].gainNode!.gain.setTargetAtTime(volume * 0.4, this.ctx.currentTime, 0.05);
-      }
-      return;
-    }
-
-    const now = this.ctx.currentTime;
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.setTargetAtTime(volume * 0.4, now, 0.2);
-
-    if (soundKey === "rain" || soundKey === "whitenoise" || soundKey === "waves") {
-      const bufferSize = 2 * this.ctx.sampleRate;
-      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      let lastOut = 0.0;
-      for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        if (soundKey === "rain") {
-          output[i] = (lastOut + (0.02 * white)) / 1.02;
-          lastOut = output[i];
-          output[i] *= 3.5;
-        } else if (soundKey === "waves") {
-          output[i] = (lastOut + (0.03 * white)) / 1.03;
-          lastOut = output[i];
-          output[i] *= 2.5;
-        } else {
-          output[i] = white * 0.15;
-        }
-      }
-
-      const whiteNoise = this.ctx.createBufferSource();
-      whiteNoise.buffer = noiseBuffer;
-      whiteNoise.loop = true;
-
-      if (soundKey === "waves") {
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
-        lfo.frequency.setValueAtTime(0.12, now);
-        lfoGain.gain.setValueAtTime(0.5, now);
-        lfo.connect(lfoGain.gain);
-        lfo.start(now);
-      }
-
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = soundKey === "whitenoise" ? "bandpass" : "lowpass";
-      filter.frequency.setValueAtTime(soundKey === "rain" ? 900 : soundKey === "waves" ? 600 : 1500, now);
-
-      whiteNoise.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-      whiteNoise.start(now);
-
-      this.nodes[soundKey] = { source: whiteNoise, gainNode: gain, isPlaying: true };
-    } else if (soundKey === "alpha") {
-      const osc1 = this.ctx.createOscillator();
-      const osc2 = this.ctx.createOscillator();
-      osc1.frequency.setValueAtTime(200, now);
-      osc2.frequency.setValueAtTime(210, now);
-
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc1.start(now);
-      osc2.start(now);
-
-      this.nodes[soundKey] = { source: osc1, gainNode: gain, isPlaying: true };
-    } else if (soundKey === "coffee") {
-      const osc = this.ctx.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(140, now);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(now);
-      this.nodes[soundKey] = { source: osc, gainNode: gain, isPlaying: true };
-    }
-  }
-
-  public stopAll() {
-    if (!this.ctx) return;
-    Object.keys(this.nodes).forEach((k) => {
-      if (this.nodes[k]?.gainNode) {
-        this.nodes[k].gainNode!.gain.setTargetAtTime(0, this.ctx!.currentTime, 0.05);
-        this.nodes[k].isPlaying = false;
-      }
-    });
-  }
 }
 
 const audioEngine = typeof window !== "undefined" ? new AmbientAudioEngine() : null;
@@ -193,6 +86,8 @@ interface TaskItem {
   done: boolean;
   tag: string;
   priority: "urgent" | "normal" | "low";
+  dueDate?: string;
+  assignedTo?: string;
 }
 
 interface StickyNoteItem {
@@ -224,16 +119,12 @@ interface Participant {
   lastSeen: number;
 }
 
-const availableSpaceImages = [
-  { label: "The Lab (Silent Zone)", src: "/assets/gallery/IMG_1541.jpg" },
-  { label: "Lounge & Café de Spécialité", src: "/assets/cafe.png" },
-  { label: "Terrasse Outdoor Plein Air", src: "/assets/outdoor.png" },
-  { label: "Indoor Focus Zone", src: "/assets/gallery/IMG_1542.jpg" },
-  { label: "Open Space Study Hub", src: "/assets/gallery/IMG_1480.jpg" },
-  { label: "Workstation Isolée", src: "/assets/gallery/IMG_1548.jpg" },
-  { label: "Table de Réunion & Collab", src: "/assets/gallery/IMG_1482.jpg" },
-  { label: "Atmosphère du Soir", src: "/assets/gallery/IMG_1543.jpg" },
-];
+interface StudyHistoryItem {
+  id: string;
+  mode: string;
+  durationMinutes: number;
+  completedAt: string;
+}
 
 export default function StudyHubPage() {
   const [activeTab, setActiveTab] = useState<"timer" | "tasks" | "collab" | "notes">("timer");
@@ -255,8 +146,7 @@ export default function StudyHubPage() {
   const [createRoomCodeInput, setCreateRoomCodeInput] = useState("");
   const [joinRoomCodeInput, setJoinRoomCodeInput] = useState("");
 
-  // Real-Time Room Data
-  const [isConnectedRealtime, setIsConnectedRealtime] = useState(true);
+  // Real-Time Room Data (Persistent Backend DB)
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [stickyNotes, setStickyNotes] = useState<StickyNoteItem[]>([]);
   const [sharedTasks, setSharedTasks] = useState<TaskItem[]>([]);
@@ -271,19 +161,35 @@ export default function StudyHubPage() {
   const [newMomentImageError, setNewMomentImageError] = useState("");
   const [newMomentZone, setNewMomentZone] = useState("The Lab");
   const [selectedLightboxImage, setSelectedLightboxImage] = useState<SpaceMoment | null>(null);
+  const [selectedMomentFile, setSelectedMomentFile] = useState<File | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [backendMode, setBackendMode] = useState<"cloud_supabase" | "local_storage" | "cloud_credentials_found">("local_storage");
+  const [showBackendInfoModal, setShowBackendInfoModal] = useState(false);
 
   // Synced Group Timer
   const [isGroupTimerSync, setIsGroupTimerSync] = useState(false);
 
-  // Timer State (Personal / Synced)
+  // Timer State & Goals (Personal / Persistent Backend DB)
   const [timerMode, setTimerMode] = useState<"pomodoro" | "deep" | "shortBreak" | "longBreak">("pomodoro");
   const [durationSecs, setDurationSecs] = useState(25 * 60);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isTimerActive, setIsTimerActive] = useState(false);
-  const [completedPoms, setCompletedPoms] = useState(3);
-  const [focusTimeMinutes, setFocusTimeMinutes] = useState(75);
+  
+  // Real Statistics & Goals
+  const [completedPoms, setCompletedPoms] = useState(0);
+  const [focusTimeMinutes, setFocusTimeMinutes] = useState(0);
+  const [dailyGoalCycles, setDailyGoalCycles] = useState(8);
+  const [customFocusDuration, setCustomFocusDuration] = useState(25);
+  const [customBreakDuration, setCustomBreakDuration] = useState(5);
+  const [customLongBreakDuration, setCustomLongBreakDuration] = useState(15);
+  const [studyHistory, setStudyHistory] = useState<StudyHistoryItem[]>([]);
+  
+  // Customization & Feedback Modals
+  const [isCustomizingGoals, setIsCustomizingGoals] = useState(false);
+  const [sessionSuccessToast, setSessionSuccessToast] = useState(false);
+  const [resetStatsToast, setResetStatsToast] = useState(false);
 
-  // Personal Tasks State
+  // Personal Tasks State (Persistent Backend DB)
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskTag, setNewTaskTag] = useState("Examen");
@@ -297,20 +203,18 @@ export default function StudyHubPage() {
   // Shared Task Inputs
   const [newSharedTaskTitle, setNewSharedTaskTitle] = useState("");
 
-  // Soundboard State
-  const [soundStates, setSoundStates] = useState<{ [key: string]: { active: boolean; volume: number } }>({
-    rain: { active: false, volume: 0.7 },
-    coffee: { active: false, volume: 0.5 },
-    waves: { active: false, volume: 0.6 },
-    whitenoise: { active: false, volume: 0.4 },
-    alpha: { active: false, volume: 0.5 },
-  });
-
   // Notepad State
   const [notesContent, setNotesContent] = useState("");
   const [copyToast, setCopyToast] = useState(false);
 
-  // Initialize Profile & Check URL Room Params
+  // Format MM:SS helper
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  // 1. Initialize Profile, Load Stats & Tasks from Backend
   useEffect(() => {
     try {
       let currentId = localStorage.getItem("ctrl_s_user_id");
@@ -329,27 +233,60 @@ export default function StudyHubPage() {
       const randomCode = "CTRL-" + Math.floor(1000 + Math.random() * 9000);
       setCreateRoomCodeInput(randomCode);
 
+      // Fetch User Study Stats from Backend
+      fetch(`/api/study-stats?userId=${encodeURIComponent(currentId)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.stats) {
+            setCompletedPoms(data.stats.completedPoms || 0);
+            setFocusTimeMinutes(data.stats.focusTimeMinutes || 0);
+            setDailyGoalCycles(data.stats.dailyGoalCycles || 8);
+            setCustomFocusDuration(data.stats.customFocusDuration || 25);
+            setCustomBreakDuration(data.stats.customBreakDuration || 5);
+            setCustomLongBreakDuration(data.stats.customLongBreakDuration || 15);
+            setStudyHistory(data.stats.history || []);
+            setDurationSecs((data.stats.customFocusDuration || 25) * 60);
+            setTimeLeft((data.stats.customFocusDuration || 25) * 60);
+          }
+        })
+        .catch(() => {});
+
+      // Fetch User Tasks from Backend
+      fetch(`/api/tasks?userId=${encodeURIComponent(currentId)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.tasks) {
+            setTasks(data.tasks);
+          } else {
+            const savedTasks = localStorage.getItem("ctrl_s_saved_tasks");
+            if (savedTasks) setTasks(JSON.parse(savedTasks));
+          }
+        })
+        .catch(() => {
+          const savedTasks = localStorage.getItem("ctrl_s_saved_tasks");
+          if (savedTasks) setTasks(JSON.parse(savedTasks));
+        });
+
+      // Check URL Room Params
       if (typeof window !== "undefined") {
         const urlParams = new URLSearchParams(window.location.search);
         const urlRoom = urlParams.get("room");
         if (urlRoom) {
           const formatted = urlRoom.toUpperCase();
           setRoomCode(formatted);
-          setRoomDisplayName(formatted);
+          setRoomDisplayName(formatted === "PUBLIC" ? "Salon Public Général CTRL S" : formatted);
           setInRoom(true);
+          setActiveTab("collab");
         }
       }
 
-      const savedTasks = localStorage.getItem("ctrl_s_saved_tasks");
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
-        setTasks([
-          { id: 1, text: "Réviser cours Anatomie Dentaire (Fac Monastir)", done: true, tag: "Examen", priority: "urgent" },
-          { id: 2, text: "Finaliser maquette projet web & tests", done: false, tag: "Projet", priority: "normal" },
-          { id: 3, text: "Fiches de synthèse Biochimie Chapitre 5", done: false, tag: "Révision", priority: "normal" },
-        ]);
-      }
+      // Check Backend Database Status
+      fetch("/api/backend-status")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.mode) setBackendMode(d.mode);
+        })
+        .catch(() => {});
 
       const savedNotes = localStorage.getItem("ctrl_s_scratchpad");
       if (savedNotes) {
@@ -367,20 +304,21 @@ export default function StudyHubPage() {
     } catch {}
   }, []);
 
-  // Save personal tasks & notes to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem("ctrl_s_saved_tasks", JSON.stringify(tasks));
-    } catch {}
-  }, [tasks]);
-
+  // Save personal notes to localStorage
   useEffect(() => {
     try {
       localStorage.setItem("ctrl_s_scratchpad", notesContent);
     } catch {}
   }, [notesContent]);
 
-  // REAL-TIME SYNC ENGINE
+  // Save tasks cache to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("ctrl_s_saved_tasks", JSON.stringify(tasks));
+    } catch {}
+  }, [tasks]);
+
+  // 2. REAL-TIME ROOM SYNC ENGINE (Persistent Backend)
   const syncWithRoomServer = useCallback(async (action?: string, payload?: unknown) => {
     if (!inRoom || !roomCode) return;
     try {
@@ -399,9 +337,9 @@ export default function StudyHubPage() {
           setSharedTasks(data.sharedTasks || []);
           setSpaceMoments(data.spaceMoments || []);
           if (data.roomName) setRoomDisplayName(data.roomName);
-          setIsConnectedRealtime(true);
         }
       } else {
+        // Heartbeat ping
         const res = await fetch(`/api/rooms/${encodeURIComponent(roomCode)}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -425,8 +363,8 @@ export default function StudyHubPage() {
           setSharedTasks(data.sharedTasks || []);
           setSpaceMoments(data.spaceMoments || []);
           if (data.roomName) setRoomDisplayName(data.roomName);
-          setIsConnectedRealtime(true);
 
+          // Synchronized group timer
           if (isGroupTimerSync && data.syncedTimer) {
             if (data.syncedTimer.updatedBy !== userName) {
               setIsTimerActive(data.syncedTimer.isRunning);
@@ -436,22 +374,20 @@ export default function StudyHubPage() {
           }
         }
       }
-    } catch {
-      setIsConnectedRealtime(false);
-    }
+    } catch {}
   }, [inRoom, roomCode, userId, userName, userRole, isTimerActive, timeLeft, isGroupTimerSync]);
 
-  // Real-Time Polling Loop
+  // Real-Time Polling Loop (every 2.5s)
   useEffect(() => {
     if (!inRoom) return;
     syncWithRoomServer();
     const interval = setInterval(() => {
       syncWithRoomServer();
-    }, 1800);
+    }, 2500);
     return () => clearInterval(interval);
   }, [inRoom, syncWithRoomServer]);
 
-  // Local Timer Countdown
+  // 3. Local & Synced Timer Countdown
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isTimerActive && timeLeft > 0) {
@@ -460,23 +396,58 @@ export default function StudyHubPage() {
       }, 1000);
     } else if (isTimerActive && timeLeft === 0) {
       setIsTimerActive(false);
+
+      // Play audio chime
+      if (audioEngine) {
+        audioEngine.playChime();
+      }
+
       if (timerMode === "pomodoro" || timerMode === "deep") {
+        const sessionMins = Math.round(durationSecs / 60);
+
+        // Optimistic UI updates
         setCompletedPoms((c) => c + 1);
-        setFocusTimeMinutes((m) => m + Math.round(durationSecs / 60));
+        setFocusTimeMinutes((m) => m + sessionMins);
+        setSessionSuccessToast(true);
+        setTimeout(() => setSessionSuccessToast(false), 5000);
+
+        // Record session to backend database
+        const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+        fetch("/api/study-stats", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "record_session",
+            userId: activeUserId,
+            payload: {
+              mode: timerMode,
+              durationMinutes: sessionMins,
+            },
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.stats) {
+              setCompletedPoms(data.stats.completedPoms);
+              setFocusTimeMinutes(data.stats.focusTimeMinutes);
+              setStudyHistory(data.stats.history || []);
+            }
+          })
+          .catch(() => {});
       }
     }
     return () => clearInterval(interval);
-  }, [isTimerActive, timeLeft, durationSecs, timerMode]);
+  }, [isTimerActive, timeLeft, durationSecs, timerMode, userId]);
 
-  // Timer preset change
+  // Timer Preset Change
   const setTimerPreset = (mode: "pomodoro" | "deep" | "shortBreak" | "longBreak") => {
     setTimerMode(mode);
     setIsTimerActive(false);
     let seconds = 25 * 60;
-    if (mode === "pomodoro") seconds = 25 * 60;
+    if (mode === "pomodoro") seconds = customFocusDuration * 60;
     if (mode === "deep") seconds = 50 * 60;
-    if (mode === "shortBreak") seconds = 5 * 60;
-    if (mode === "longBreak") seconds = 15 * 60;
+    if (mode === "shortBreak") seconds = customBreakDuration * 60;
+    if (mode === "longBreak") seconds = customLongBreakDuration * 60;
     setDurationSecs(seconds);
     setTimeLeft(seconds);
 
@@ -506,7 +477,72 @@ export default function StudyHubPage() {
     }
   };
 
-  // ROOM ACTIONS: CREATE / JOIN / LEAVE
+  // Save Customized Goal Settings to Backend DB
+  const saveGoalSettings = async () => {
+    const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+    try {
+      const res = await fetch("/api/study-stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update_goals",
+          userId: activeUserId,
+          payload: {
+            dailyGoalCycles,
+            customFocusDuration,
+            customBreakDuration,
+            customLongBreakDuration,
+          },
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.stats) {
+          setDailyGoalCycles(data.stats.dailyGoalCycles);
+          setCustomFocusDuration(data.stats.customFocusDuration);
+          setCustomBreakDuration(data.stats.customBreakDuration);
+          setCustomLongBreakDuration(data.stats.customLongBreakDuration);
+          if (timerMode === "pomodoro") {
+            setDurationSecs(data.stats.customFocusDuration * 60);
+            setTimeLeft(data.stats.customFocusDuration * 60);
+          }
+        }
+      }
+    } catch {}
+    setIsCustomizingGoals(false);
+  };
+
+  // Reset Today's Pomodoro Stats in Backend DB
+  const handleResetTodayStats = async () => {
+    if (!confirm("Voulez-vous réinitialiser vos cycles et temps focus pour aujourd'hui ?")) {
+      return;
+    }
+    const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+    try {
+      const res = await fetch("/api/study-stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "reset_today",
+          userId: activeUserId,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.stats) {
+          setCompletedPoms(data.stats.completedPoms);
+          setFocusTimeMinutes(data.stats.focusTimeMinutes);
+        }
+      }
+    } catch {
+      setCompletedPoms(0);
+      setFocusTimeMinutes(0);
+    }
+    setResetStatsToast(true);
+    setTimeout(() => setResetStatsToast(false), 3000);
+  };
+
+  // ROOM ACTIONS: CREATE / JOIN / LEAVE (With Browser URL Sync)
   const handleCreateRoom = (e: React.FormEvent) => {
     e.preventDefault();
     const finalCode = (createRoomCodeInput.trim() || "CTRL-" + Math.floor(1000 + Math.random() * 9000)).toUpperCase();
@@ -516,9 +552,26 @@ export default function StudyHubPage() {
     setRoomDisplayName(displayName);
     setInRoom(true);
 
-    setTimeout(() => {
-      syncWithRoomServer("set_room_name", { name: displayName });
-    }, 200);
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `/hub?room=${encodeURIComponent(finalCode)}`);
+    }
+
+    fetch(`/api/rooms/${encodeURIComponent(finalCode)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "set_room_name",
+        payload: { name: displayName },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.participants) setParticipants(data.participants);
+        if (data.stickyNotes) setStickyNotes(data.stickyNotes);
+        if (data.sharedTasks) setSharedTasks(data.sharedTasks);
+        if (data.spaceMoments) setSpaceMoments(data.spaceMoments);
+      })
+      .catch(() => {});
   };
 
   const handleJoinRoom = (e: React.FormEvent) => {
@@ -529,16 +582,58 @@ export default function StudyHubPage() {
     setRoomDisplayName(finalCode);
     setInRoom(true);
     setJoinRoomCodeInput("");
+
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `/hub?room=${encodeURIComponent(finalCode)}`);
+    }
+
+    fetch(`/api/rooms/${encodeURIComponent(finalCode)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.participants) setParticipants(data.participants);
+        if (data.stickyNotes) setStickyNotes(data.stickyNotes);
+        if (data.sharedTasks) setSharedTasks(data.sharedTasks);
+        if (data.spaceMoments) setSpaceMoments(data.spaceMoments);
+        if (data.roomName) setRoomDisplayName(data.roomName);
+      })
+      .catch(() => {});
   };
 
   const handleJoinPublicLounge = () => {
-    setRoomCode("PUBLIC");
+    const finalCode = "PUBLIC";
+    setRoomCode(finalCode);
     setRoomDisplayName("Salon Public Général CTRL S");
-    setRoomSectionView("moments"); // Highlight the moments in public lounge
+    setRoomSectionView("moments");
     setInRoom(true);
+
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `/hub?room=PUBLIC`);
+    }
+
+    fetch(`/api/rooms/PUBLIC`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.participants) setParticipants(data.participants);
+        if (data.stickyNotes) setStickyNotes(data.stickyNotes);
+        if (data.sharedTasks) setSharedTasks(data.sharedTasks);
+        if (data.spaceMoments) setSpaceMoments(data.spaceMoments);
+      })
+      .catch(() => {});
   };
 
   const handleLeaveRoom = () => {
+    if (roomCode) {
+      const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+      fetch(`/api/rooms/${encodeURIComponent(roomCode)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "leave_room",
+          payload: { id: activeUserId },
+        }),
+      }).catch(() => {});
+    }
+
     setInRoom(false);
     setRoomCode("");
     setRoomDisplayName("");
@@ -547,6 +642,10 @@ export default function StudyHubPage() {
     setSharedTasks([]);
     setSpaceMoments([]);
     setIsGroupTimerSync(false);
+
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", "/hub");
+    }
   };
 
   // Real-Time Sticky Notes Actions
@@ -568,22 +667,103 @@ export default function StudyHubPage() {
   };
 
   // Real-Time Moments & Souvenirs Actions
-  const handleAddMoment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMomentTitle.trim() || !newMomentImage) return;
-
-    syncWithRoomServer("add_moment", {
-      title: newMomentTitle.trim(),
-      caption: newMomentCaption.trim(),
-      image: newMomentImage,
-      author: userName || "Coworker CTRL S",
-      zoneTag: newMomentZone
+  const compressImage = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxDim = 1400;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", 0.85));
+        } else {
+          resolve(img.src);
+        }
+      };
+      img.onerror = () => resolve("");
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(file);
     });
+  };
 
-    setNewMomentTitle("");
-    setNewMomentCaption("");
-    setNewMomentImage("");
-    setIsAddingMoment(false);
+  const handleAddMoment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMomentTitle.trim()) {
+      setNewMomentImageError("Veuillez donner un titre à la photo.");
+      return;
+    }
+    if (!selectedMomentFile && !newMomentImage) {
+      setNewMomentImageError("Veuillez sélectionner une photo.");
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setNewMomentImageError("");
+
+    try {
+      let finalImageUrl = newMomentImage;
+
+      if (selectedMomentFile) {
+        // Compress client-side before sending
+        const compressedDataUrl = await compressImage(selectedMomentFile);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            dataUrl: compressedDataUrl,
+            customName: newMomentTitle.trim().toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Erreur de téléversement vers le serveur.");
+        }
+
+        const data = await res.json();
+        if (!data.success || !data.url) {
+          throw new Error(data.error || "Échec de l'enregistrement de l'image.");
+        }
+        finalImageUrl = data.url;
+      }
+
+      await syncWithRoomServer("add_moment", {
+        title: newMomentTitle.trim(),
+        caption: newMomentCaption.trim(),
+        image: finalImageUrl,
+        author: userName || "Coworker CTRL S",
+        zoneTag: newMomentZone,
+      });
+
+      setNewMomentTitle("");
+      setNewMomentCaption("");
+      setNewMomentImage("");
+      setSelectedMomentFile(null);
+      setIsAddingMoment(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Erreur de téléversement.";
+      setNewMomentImageError(msg);
+    } finally {
+      setIsUploadingPhoto(false);
+    }
   };
 
   const handleMomentImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -592,21 +772,30 @@ export default function StudyHubPage() {
 
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setNewMomentImageError("Choisissez un fichier image.");
+      setNewMomentImageError("Choisissez un fichier image (JPG, PNG, WebP).");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setNewMomentImageError("L'image doit faire 2 Mo maximum.");
+    if (file.size > 12 * 1024 * 1024) {
+      setNewMomentImageError("L'image d'origine doit faire 12 Mo maximum.");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => setNewMomentImage(typeof reader.result === "string" ? reader.result : "");
-    reader.readAsDataURL(file);
+    setSelectedMomentFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setNewMomentImage(previewUrl);
   };
 
   const handleLikeMoment = (id: number) => {
     syncWithRoomServer("like_moment", { id });
+  };
+
+  const handleDeleteMoment = (id: number) => {
+    if (confirm("Supprimer cette photo du salon ?")) {
+      syncWithRoomServer("delete_moment", { id });
+      if (selectedLightboxImage && selectedLightboxImage.id === id) {
+        setSelectedLightboxImage(null);
+      }
+    }
   };
 
   // Real-Time Shared Tasks Actions
@@ -639,52 +828,111 @@ export default function StudyHubPage() {
     setTimeout(() => setShareLinkToast(false), 2500);
   };
 
-  // Soundboard actions
-  const toggleSound = (soundKey: string) => {
-    const current = soundStates[soundKey];
-    const newActive = !current.active;
-    const updated = {
-      ...soundStates,
-      [soundKey]: { ...current, active: newActive }
-    };
-    setSoundStates(updated);
-    if (audioEngine) {
-      audioEngine.setSound(soundKey, newActive, current.volume);
-    }
-  };
-
-  const updateSoundVolume = (soundKey: string, volume: number) => {
-    const updated = {
-      ...soundStates,
-      [soundKey]: { ...soundStates[soundKey], volume }
-    };
-    setSoundStates(updated);
-    if (soundStates[soundKey].active && audioEngine) {
-      audioEngine.setSound(soundKey, true, volume);
-    }
-  };
-
-  // Personal task actions
-  const addPersonalTask = (e: React.FormEvent) => {
+  // 4. PERSONAL TASKS ACTIONS (Persistent Backend DB)
+  const addPersonalTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
-    const newTask: TaskItem = {
-      id: Date.now(),
-      text: newTaskTitle.trim(),
-      done: false,
-      tag: newTaskTag,
-      priority: newTaskPriority
-    };
-    setTasks([newTask, ...tasks]);
+
+    const taskText = newTaskTitle.trim();
+    const taskTag = newTaskTag;
+    const taskPriority = newTaskPriority;
     setNewTaskTitle("");
+
+    const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+
+    // Optimistic local update
+    const tempTask: TaskItem = {
+      id: Date.now(),
+      text: taskText,
+      done: false,
+      tag: taskTag,
+      priority: taskPriority,
+    };
+    setTasks((prev) => [tempTask, ...prev]);
+
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "add_task",
+          userId: activeUserId,
+          payload: {
+            text: taskText,
+            tag: taskTag,
+            priority: taskPriority,
+          },
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.tasks) setTasks(data.tasks);
+      }
+    } catch {}
   };
 
-  const togglePersonalTaskDone = (id: number) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const togglePersonalTaskDone = async (id: number) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
+    );
+
+    const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "toggle_task",
+          userId: activeUserId,
+          payload: { id },
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.tasks) setTasks(data.tasks);
+      }
+    } catch {}
   };
 
-  const deletePersonalTask = (id: number) => {
-    setTasks(tasks.filter(t => t.id !== id));
+  const deletePersonalTask = async (id: number) => {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+
+    const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "delete_task",
+          userId: activeUserId,
+          payload: { id },
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.tasks) setTasks(data.tasks);
+      }
+    } catch {}
+  };
+
+  const clearCompletedPersonalTasks = async () => {
+    setTasks((prev) => prev.filter((t) => !t.done));
+
+    const activeUserId = userId || localStorage.getItem("ctrl_s_user_id") || "anonymous";
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "clear_completed",
+          userId: activeUserId,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.tasks) setTasks(data.tasks);
+      }
+    } catch {}
   };
 
   const copyNotesToClipboard = () => {
@@ -710,18 +958,12 @@ export default function StudyHubPage() {
     if (inRoom) syncWithRoomServer();
   };
 
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-  };
-
   const progressPercent = durationSecs > 0 ? ((durationSecs - timeLeft) / durationSecs) * 100 : 0;
   const radius = 120;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
-  const filteredPersonalTasks = tasks.filter(t => {
+  const filteredPersonalTasks = tasks.filter((t) => {
     if (taskFilter === "active") return !t.done;
     if (taskFilter === "completed") return t.done;
     return true;
@@ -730,9 +972,37 @@ export default function StudyHubPage() {
   return (
     <div className="min-h-screen bg-[#0a0e17] text-white flex flex-col selection:bg-brand-orange selection:text-white font-sans">
       
-      {/* Top Navbar & Real-Time Sync Indicator */}
+      {/* Toast Notifications */}
+      <AnimatePresence>
+        {sessionSuccessToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 right-6 z-50 bg-emerald-500 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-emerald-400 font-lemon-milk text-xs uppercase"
+          >
+            <CheckCircle2 className="w-5 h-5 text-white" />
+            <div>
+              <span className="font-bold block">Session Terminée !</span>
+              <span className="text-[10px] font-normal lowercase tracking-normal">Progression sauvegardée en base de données</span>
+            </div>
+          </motion.div>
+        )}
+        {resetStatsToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 right-6 z-50 bg-brand-orange text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-orange-400 font-lemon-milk text-xs uppercase"
+          >
+            <RotateCcw className="w-5 h-5 text-white" />
+            <span>Statistiques du jour réinitialisées</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Top Navbar */}
       <header className="sticky top-0 z-50 bg-[#0a0e17]/90 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
-        {/* Back Link & Brand Logo */}
         <div className="flex items-center gap-4 sm:gap-6">
           <Link
             href="/"
@@ -771,7 +1041,7 @@ export default function StudyHubPage() {
                 Salle : #{roomCode}
               </span>
               <span className="hidden sm:inline text-[10px] text-white/80 font-bold bg-white/10 px-2 py-0.5 rounded-full">
-                {participants.length || 1} ordi{participants.length > 1 ? "s" : ""}
+                {participants.length || 1} connecté{participants.length > 1 ? "s" : ""}
               </span>
             </div>
           ) : (
@@ -780,6 +1050,27 @@ export default function StudyHubPage() {
               <span className="text-[11px] font-lemon-milk uppercase">Mode Personnel</span>
             </div>
           )}
+
+          {/* Cloud Database Status Pill */}
+          <button
+            onClick={() => setShowBackendInfoModal(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer font-lemon-milk uppercase tracking-wider ${
+              backendMode === "cloud_supabase"
+                ? "bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25"
+                : "bg-amber-500/15 border border-amber-500/40 text-amber-400 hover:bg-amber-500/25"
+            }`}
+            title="Statut de la base de données et du backend multi-ordinateurs"
+          >
+            <Database className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[10px]">
+              {backendMode === "cloud_supabase" ? "Cloud DB Actif" : "Sync Multi-PC (Setup)"}
+            </span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                backendMode === "cloud_supabase" ? "bg-emerald-400" : "bg-amber-400 animate-pulse"
+              }`}
+            />
+          </button>
 
           {/* User Profile Pill */}
           <div className="relative">
@@ -889,7 +1180,7 @@ export default function StudyHubPage() {
           )}
         </div>
 
-        {/* TAB 1: POMODORO & FOCUS TIMER */}
+        {/* TAB 1: POMODORO & FOCUS TIMER (CUSTOMIZABLE WITH REAL STATS) */}
         {activeTab === "timer" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -903,10 +1194,10 @@ export default function StudyHubPage() {
               {/* Mode Presets */}
               <div className="flex flex-wrap items-center justify-center gap-2 mb-8 z-10">
                 {[
-                  { key: "pomodoro", label: "Pomodoro 25m" },
+                  { key: "pomodoro", label: `Pomodoro ${customFocusDuration}m` },
                   { key: "deep", label: "Deep Work 50m" },
-                  { key: "shortBreak", label: "Pause 5m" },
-                  { key: "longBreak", label: "Pause 15m" },
+                  { key: "shortBreak", label: `Pause ${customBreakDuration}m` },
+                  { key: "longBreak", label: `Pause ${customLongBreakDuration}m` },
                 ].map((p) => (
                   <button
                     key={p.key}
@@ -977,7 +1268,7 @@ export default function StudyHubPage() {
                     setTimeLeft(durationSecs);
                   }}
                   className="p-4 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
-                  title="Réinitialiser"
+                  title="Réinitialiser le chrono"
                 >
                   <RotateCcw className="w-5 h-5" />
                 </button>
@@ -1001,14 +1292,36 @@ export default function StudyHubPage() {
               )}
             </div>
 
-            {/* Side Metrics & Quick Advice */}
+            {/* Side Metrics & Personalized Goals Card */}
             <div className="lg:col-span-5 flex flex-col gap-6">
               <div className="bg-[#101624] border border-white/10 rounded-3xl p-6 sm:p-7 space-y-5">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-white font-lemon-milk flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-brand-orange" />
-                  Statistiques de la Session
-                </h3>
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white font-lemon-milk flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-brand-orange" />
+                    Statistiques de la Session
+                  </h3>
 
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setIsCustomizingGoals(true)}
+                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-brand-orange hover:text-white text-white/70 text-[10px] font-lemon-milk uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Personnaliser les objectifs et durées"
+                    >
+                      <Sliders className="w-3.5 h-3.5" />
+                      <span>Personnaliser</span>
+                    </button>
+
+                    <button
+                      onClick={handleResetTodayStats}
+                      className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors cursor-pointer"
+                      title="Remettre les statistiques du jour à zéro"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Real Tracked Numbers */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
                     <span className="text-[11px] text-white/60 uppercase font-lemon-milk block mb-1">Cycles Réalisés</span>
@@ -1020,35 +1333,188 @@ export default function StudyHubPage() {
                   </div>
                 </div>
 
+                {/* Personalized Daily Goal Progress */}
                 <div className="pt-2 border-t border-white/10">
                   <div className="flex items-center justify-between text-xs text-white/80 mb-2 font-medium">
-                    <span>Objectif Quotidien (8 cycles)</span>
-                    <span className="font-bold text-brand-orange">{Math.round((completedPoms / 8) * 100)}%</span>
+                    <span>Objectif Quotidien ({dailyGoalCycles} cycles)</span>
+                    <span className="font-bold text-brand-orange">
+                      {Math.min(100, Math.round((completedPoms / dailyGoalCycles) * 100))}%
+                    </span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div className="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
                     <div
-                      className="h-full bg-brand-orange transition-all duration-500 rounded-full"
-                      style={{ width: `${Math.min(100, (completedPoms / 8) * 100)}%` }}
+                      className="h-full bg-gradient-to-r from-brand-orange to-amber-400 transition-all duration-500 rounded-full"
+                      style={{ width: `${Math.min(100, (completedPoms / dailyGoalCycles) * 100)}%` }}
                     />
                   </div>
+                  {completedPoms >= dailyGoalCycles && (
+                    <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-lemon-milk uppercase flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5" />
+                      <span>Objectif du jour accompli ! Bravo !</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Recent Completed Sessions Today */}
+                {studyHistory.length > 0 && (
+                  <div className="pt-3 border-t border-white/10">
+                    <span className="text-[10px] text-white/50 uppercase font-lemon-milk block mb-2">
+                      Sessions Validées Aujourd&apos;hui ({studyHistory.length})
+                    </span>
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                      {studyHistory.slice(0, 5).map((h) => (
+                        <div key={h.id} className="flex items-center justify-between text-xs px-3 py-2 rounded-xl bg-white/5 text-white/80">
+                          <span className="font-mono text-brand-orange">+{h.durationMinutes} min</span>
+                          <span className="capitalize text-white/60 text-[11px]">{h.mode}</span>
+                          <span className="text-[10px] text-white/40">{h.completedAt}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
+              {/* Study Tip Box */}
               <div className="bg-gradient-to-br from-brand-blue/20 to-brand-orange/10 border border-brand-blue/30 rounded-3xl p-6 space-y-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-orange font-lemon-milk flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4" />
                   Conseil Révision CTRL S
                 </span>
-                <h4 className="text-sm font-semibold text-white">La Méthode 50/10 pour les Examens</h4>
+                <h4 className="text-sm font-semibold text-white">Méthode Focus Adaptée aux Examens</h4>
                 <p className="text-xs text-white/80 font-light leading-relaxed">
-                  Travaillez 50 minutes sans téléphone ni onglets distrayants, puis accordez-vous 10 minutes de marche ou un café au lounge. Votre mémoire de travail sera 2x plus efficace.
+                  Travaillez {customFocusDuration} minutes complètes sans notification ni distraction. Accordez-vous ensuite {customBreakDuration} minutes de pause active ou un café pour recharger votre mémoire de travail.
                 </p>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* TAB 2: TO-DO LIST & TASK MATRIX */}
+        {/* GOALS CUSTOMIZATION MODAL */}
+        <AnimatePresence>
+          {isCustomizingGoals && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm p-4 flex items-center justify-center"
+            >
+              <div className="max-w-md w-full bg-[#101624] border border-white/20 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
+                <button
+                  onClick={() => setIsCustomizingGoals(false)}
+                  className="absolute top-5 right-5 text-white/60 hover:text-white cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-brand-orange font-lemon-milk block mb-1">
+                    Paramètres Personnalisés
+                  </span>
+                  <h3 className="text-lg font-bold uppercase text-white font-lemon-milk">
+                    Ajuster vos Objectifs & Durées
+                  </h3>
+                  <p className="text-xs text-white/60 font-light mt-1">
+                    Personnalisez votre rythme de révision selon vos besoins d&apos;examen.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-lemon-milk uppercase text-white/80 block mb-1.5">
+                      Objectif Quotidien (Nombre de Cycles)
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[4, 6, 8, 10].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => setDailyGoalCycles(num)}
+                          className={`py-2 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer ${
+                            dailyGoalCycles === num
+                              ? "bg-brand-orange text-white ring-2 ring-white/50"
+                              : "bg-white/5 text-white/70 hover:bg-white/10"
+                          }`}
+                        >
+                          {num} cycles
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-lemon-milk uppercase text-white/80 block mb-1.5">
+                      Durée Session Focus Pomodoro (Minutes)
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[20, 25, 30, 45].map((mins) => (
+                        <button
+                          key={mins}
+                          type="button"
+                          onClick={() => setCustomFocusDuration(mins)}
+                          className={`py-2 rounded-xl text-xs font-bold font-mono transition-all cursor-pointer ${
+                            customFocusDuration === mins
+                              ? "bg-brand-orange text-white ring-2 ring-white/50"
+                              : "bg-white/5 text-white/70 hover:bg-white/10"
+                          }`}
+                        >
+                          {mins} min
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-lemon-milk uppercase text-white/70 block mb-1">
+                        Pause Courte (min)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="30"
+                        value={customBreakDuration}
+                        onChange={(e) => setCustomBreakDuration(Number(e.target.value) || 5)}
+                        className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-mono text-sm focus:border-brand-orange focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-lemon-milk uppercase text-white/70 block mb-1">
+                        Pause Longue (min)
+                      </label>
+                      <input
+                        type="number"
+                        min="5"
+                        max="60"
+                        value={customLongBreakDuration}
+                        onChange={(e) => setCustomLongBreakDuration(Number(e.target.value) || 15)}
+                        className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-mono text-sm focus:border-brand-orange focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomizingGoals(false)}
+                    className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-lemon-milk uppercase cursor-pointer"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveGoalSettings}
+                    className="px-5 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orange/90 text-white text-xs font-bold font-lemon-milk uppercase cursor-pointer shadow-md"
+                  >
+                    Sauvegarder en Base
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* TAB 2: TO-DO LIST & TASK MATRIX (PERSISTENT BACKEND DATABASE) */}
         {activeTab === "tasks" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -1060,10 +1526,10 @@ export default function StudyHubPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
                 <div>
                   <h3 className="text-lg font-bold uppercase tracking-wider text-white font-lemon-milk">
-                    Vos Tâches & Objectifs Personnels
+                    Vos Tâches & Objectifs de Révision
                   </h3>
                   <p className="text-xs text-white/60 font-light">
-                    Sauvegardé automatiquement dans votre navigateur.
+                    Sauvegardé de façon permanente dans votre base de données.
                   </p>
                 </div>
 
@@ -1090,7 +1556,7 @@ export default function StudyHubPage() {
                   type="text"
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
-                  placeholder="Nouvelle tâche (ex: Réviser Chapitre 3 Pharmacologie)..."
+                  placeholder="Nouvel objectif (ex: Fiches anatomie dentaire, TP code, QCM)..."
                   className="flex-grow px-4 py-3 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-orange text-sm text-white placeholder:text-white/40"
                 />
 
@@ -1106,6 +1572,16 @@ export default function StudyHubPage() {
                   <option value="Perso">Perso</option>
                 </select>
 
+                <select
+                  value={newTaskPriority}
+                  onChange={(e) => setNewTaskPriority(e.target.value as "urgent" | "normal" | "low")}
+                  className="px-3 py-3 rounded-2xl bg-[#1a2335] border border-white/10 text-xs text-white uppercase font-lemon-milk cursor-pointer"
+                >
+                  <option value="urgent">Urgent</option>
+                  <option value="normal">Normal</option>
+                  <option value="low">Basse</option>
+                </select>
+
                 <button
                   type="submit"
                   className="px-6 py-3 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white text-xs font-bold uppercase tracking-wider font-lemon-milk flex items-center justify-center gap-2 cursor-pointer shadow-md shrink-0"
@@ -1119,7 +1595,7 @@ export default function StudyHubPage() {
               <div className="space-y-3 pt-2">
                 {filteredPersonalTasks.length === 0 ? (
                   <div className="text-center py-12 text-white/50 text-xs font-light">
-                    Aucune tâche dans cette catégorie. Ajoutez-en une ci-dessus !
+                    Aucune tâche dans cette catégorie. Ajoutez vos objectifs ci-dessus !
                   </div>
                 ) : (
                   filteredPersonalTasks.map((task) => (
@@ -1146,20 +1622,26 @@ export default function StudyHubPage() {
                         </div>
 
                         <div className="flex flex-col">
-                          <span className={`text-sm ${task.done ? "line-through" : "font-medium"}`}>
+                          <span className={`text-sm ${task.done ? "line-through text-white/50" : "font-medium"}`}>
                             {task.text}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-brand-blue/20 text-brand-blue border border-brand-blue/30 font-lemon-milk">
+                        <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border font-lemon-milk ${
+                          task.priority === "urgent"
+                            ? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                            : task.priority === "low"
+                            ? "bg-white/10 text-white/60 border-white/10"
+                            : "bg-brand-blue/20 text-brand-blue border-brand-blue/30"
+                        }`}>
                           {task.tag}
                         </span>
                         <button
                           onClick={() => deletePersonalTask(task.id)}
                           className="text-white/40 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
-                          title="Supprimer"
+                          title="Supprimer la tâche"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -1168,20 +1650,33 @@ export default function StudyHubPage() {
                   ))
                 )}
               </div>
+
+              {/* Clear Completed Button */}
+              {tasks.some((t) => t.done) && (
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={clearCompletedPersonalTasks}
+                    className="text-xs text-white/50 hover:text-red-400 font-lemon-milk uppercase transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Vider les objectifs terminés</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Right Column: Progress Summary */}
             <div className="lg:col-span-4 flex flex-col gap-6">
               <div className="bg-[#101624] border border-white/10 rounded-3xl p-6 sm:p-7 space-y-4">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-brand-orange font-lemon-milk">
-                  Progression Personnelle
+                  Progression des Objectifs
                 </h4>
                 <div className="flex items-baseline justify-between">
                   <span className="text-4xl font-extrabold text-white font-mono">
-                    {tasks.filter(t => t.done).length} / {tasks.length}
+                    {tasks.filter((t) => t.done).length} / {tasks.length}
                   </span>
                   <span className="text-xs font-bold text-emerald-400">
-                    {tasks.length > 0 ? Math.round((tasks.filter(t => t.done).length / tasks.length) * 100) : 0}% terminé
+                    {tasks.length > 0 ? Math.round((tasks.filter((t) => t.done).length / tasks.length) * 100) : 0}% terminé
                   </span>
                 </div>
 
@@ -1189,20 +1684,20 @@ export default function StudyHubPage() {
                   <div
                     className="h-full bg-gradient-to-r from-brand-orange to-emerald-400 transition-all duration-500 rounded-full"
                     style={{
-                      width: `${tasks.length > 0 ? (tasks.filter(t => t.done).length / tasks.length) * 100 : 0}%`
+                      width: `${tasks.length > 0 ? (tasks.filter((t) => t.done).length / tasks.length) * 100 : 0}%`
                     }}
                   />
                 </div>
 
                 <p className="text-xs text-white/60 font-light pt-2 leading-relaxed">
-                  Chaque tâche cochée est sauvegardée instantanément sur votre appareil.
+                  Chaque objectif complété est sauvegardé sur votre compte et contribue à votre concentration globale.
                 </p>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* TAB 3: COLLAB ROOMS (LOBBY OR ACTIVE ROOM) */}
+        {/* TAB 3: COLLAB ROOMS (LOBBY OR ACTIVE ROOM - PERSISTENT DB BACKEND) */}
         {activeTab === "collab" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -1215,13 +1710,13 @@ export default function StudyHubPage() {
                 <div className="text-center max-w-xl mx-auto space-y-3">
                   <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-orange/10 border border-brand-orange/30 text-brand-orange text-xs font-bold uppercase tracking-wider font-lemon-milk">
                     <Users className="w-4 h-4" />
-                    Salles d'Étude & Travail Collaboratif
+                    Salles d&apos;Étude & Travail Collaboratif
                   </span>
                   <h2 className="text-3xl font-extrabold uppercase tracking-tight text-white font-lemon-milk">
                     Rejoindre ou Créer une Salle
                   </h2>
                   <p className="text-xs text-white/70 font-light leading-relaxed">
-                    Étudiez en simultané sur plusieurs ordinateurs avec vos camarades. Synchronisez vos notes, tâches et immortalisez vos instants souvenirs dans le space.
+                    Étudiez en direct sur plusieurs ordinateurs avec vos camarades. Synchronisez vos mémos, tâches partagées et immortalisez vos instants souvenirs dans le space.
                   </p>
                 </div>
 
@@ -1239,7 +1734,7 @@ export default function StudyHubPage() {
                         Créer une Salle
                       </h3>
                       <p className="text-xs text-white/60 font-light leading-relaxed">
-                        Créez un espace de travail vierge pour votre groupe d'étude avec un code privé.
+                        Créez un espace de travail vierge pour votre groupe d&apos;étude avec un code privé.
                       </p>
 
                       <form onSubmit={handleCreateRoom} className="space-y-3 pt-2">
@@ -1327,7 +1822,7 @@ export default function StudyHubPage() {
                         Salon Public CTRL S
                       </h3>
                       <p className="text-xs text-white/60 font-light leading-relaxed">
-                        Rejoignez l'espace ouvert général et découvrez le <strong>Mur des Instants & Souvenirs du Space</strong>.
+                        Rejoignez l&apos;espace ouvert général et découvrez le <strong>Mur des Instants & Souvenirs du Space</strong>.
                       </p>
                     </div>
 
@@ -1354,7 +1849,7 @@ export default function StudyHubPage() {
                       <div className="flex items-center gap-2 mb-1">
                         <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
                         <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 font-lemon-milk">
-                          Session En Ligne Active
+                          Session En Ligne Active (Sauvegardée en Base)
                         </span>
                       </div>
                       <h3 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wider text-white font-lemon-milk flex items-center gap-3">
@@ -1432,7 +1927,7 @@ export default function StudyHubPage() {
                             </p>
                           </div>
                           <span className="text-xs text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                            {sharedTasks.filter(t => t.done).length} / {sharedTasks.length} accomplis
+                            {sharedTasks.filter((t) => t.done).length} / {sharedTasks.length} accomplis
                           </span>
                         </div>
 
@@ -1509,7 +2004,7 @@ export default function StudyHubPage() {
                               Mur de Mémos en Temps Réel
                             </h3>
                             <p className="text-xs text-white/60 font-light">
-                              Chaque note s'affiche instantanément sur chaque écran de la salle.
+                              Chaque note s&apos;affiche instantanément sur chaque écran de la salle.
                             </p>
                           </div>
                         </div>
@@ -1556,7 +2051,7 @@ export default function StudyHubPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           {stickyNotes.length === 0 ? (
                             <div className="col-span-full text-center py-10 text-white/40 text-xs font-light">
-                              Aucun mémo pour l'instant. Soyez le premier à épingler une note pour votre groupe !
+                              Aucun mémo pour l&apos;instant. Soyez le premier à épingler une note pour votre groupe !
                             </div>
                           ) : (
                             stickyNotes.map((note) => (
@@ -1613,7 +2108,7 @@ export default function StudyHubPage() {
                             Mur des Souvenirs & Ambiance
                           </h3>
                           <p className="text-xs text-white/70 font-light">
-                            Les photos et moments vécus dans l'espace, gardés comme souvenirs précieux de vos sessions de révision.
+                            Les photos et moments vécus dans l&apos;espace, gardés comme souvenirs précieux de vos sessions de révision.
                           </p>
                         </div>
 
@@ -1622,7 +2117,7 @@ export default function StudyHubPage() {
                           className="px-4 py-2.5 rounded-xl bg-brand-orange hover:bg-brand-orange/90 text-white text-xs font-bold uppercase tracking-wider font-lemon-milk flex items-center gap-2 cursor-pointer shadow-md shrink-0"
                         >
                           <Plus className="w-4 h-4" />
-                          <span>Share a Moment</span>
+                          <span>Partager un Instant</span>
                         </button>
                       </div>
 
@@ -1637,26 +2132,26 @@ export default function StudyHubPage() {
                             className="bg-white/5 border border-brand-orange/30 p-5 rounded-2xl space-y-4 overflow-hidden"
                           >
                             <h4 className="text-xs font-bold uppercase tracking-wider text-brand-orange font-lemon-milk">
-                              Add a Memory Photo
+                              Ajouter une Photo Souvenir
                             </h4>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
                                 <label className="text-[10px] uppercase font-bold text-white/60 font-lemon-milk block mb-1">
-                                  Memory Title
+                                  Titre du Souvenir
                                 </label>
                                 <input
                                   type="text"
                                   value={newMomentTitle}
                                   onChange={(e) => setNewMomentTitle(e.target.value)}
-                                  placeholder="e.g. 'Late-night study session'..."
+                                  placeholder="ex: 'Session nocturne examen dentaire'..."
                                   className="w-full px-3.5 py-2 text-xs rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-brand-orange"
                                 />
                               </div>
 
                               <div>
                                 <label className="text-[10px] uppercase font-bold text-white/60 font-lemon-milk block mb-1">
-                                  Space Zone
+                                  Zone du Space
                                 </label>
                                 <select
                                   value={newMomentZone}
@@ -1665,25 +2160,25 @@ export default function StudyHubPage() {
                                 >
                                   <option value="The Lab">The Lab</option>
                                   <option value="Indoor Zone">Indoor Focus Zone</option>
-                                  <option value="Outdoor Zone">Outdoor Zone</option>
+                                  <option value="Outdoor Zone">Terrasse Plein Air</option>
+                                  <option value="Lounge Barista">Lounge & Café</option>
                                 </select>
                               </div>
                             </div>
 
                             <div>
                               <label htmlFor="moment-image" className="text-[10px] uppercase font-bold text-white/60 font-lemon-milk block mb-1.5">
-                                Choose a photo:
+                                Choisir une photo :
                               </label>
                               <input
                                 id="moment-image"
                                 type="file"
                                 accept="image/*"
-                                capture="environment"
                                 onChange={handleMomentImageChange}
                                 required
                                 className="block w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-base text-white file:mr-3 file:rounded-lg file:border-0 file:bg-brand-orange file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white hover:file:bg-brand-orange/90 sm:text-xs"
                               />
-                              <p className="mt-1.5 text-[10px] text-white/45">PNG, JPG ou WebP — 2 Mo maximum.</p>
+                              <p className="mt-1.5 text-[10px] text-white/45">PNG, JPG ou WebP — Optimisé et synchronisé sur le réseau.</p>
                               {newMomentImageError && <p className="mt-1 text-[10px] text-red-400">{newMomentImageError}</p>}
                               {newMomentImage && (
                                 <div className="relative mt-3 aspect-[4/3] max-w-xs overflow-hidden rounded-xl border border-brand-orange/50">
@@ -1708,6 +2203,7 @@ export default function StudyHubPage() {
                             <div className="flex justify-end gap-2">
                               <button
                                 type="button"
+                                disabled={isUploadingPhoto}
                                 onClick={() => setIsAddingMoment(false)}
                                 className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-lemon-milk uppercase"
                               >
@@ -1715,9 +2211,17 @@ export default function StudyHubPage() {
                               </button>
                               <button
                                 type="submit"
-                                className="px-5 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold uppercase font-lemon-milk shadow-md cursor-pointer"
+                                disabled={isUploadingPhoto}
+                                className="px-5 py-2 rounded-xl bg-brand-orange disabled:opacity-60 text-white text-xs font-bold uppercase font-lemon-milk shadow-md cursor-pointer flex items-center gap-2"
                               >
-                                Épingler le Souvenir
+                                {isUploadingPhoto ? (
+                                  <>
+                                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    <span>Téléversement...</span>
+                                  </>
+                                ) : (
+                                  <span>Épingler le Souvenir</span>
+                                )}
                               </button>
                             </div>
                           </motion.form>
@@ -1727,8 +2231,23 @@ export default function StudyHubPage() {
                       {/* Polaroid Moments Grid */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
                         {spaceMoments.length === 0 ? (
-                          <div className="col-span-full text-center py-12 text-white/40 text-xs font-light">
-                            Aucun instant enregistré pour cette salle. Soyez le premier à capturer un souvenir !
+                          <div className="col-span-full text-center py-14 px-4 bg-white/5 rounded-2xl border border-white/10 flex flex-col items-center">
+                            <div className="w-12 h-12 rounded-full bg-brand-orange/15 text-brand-orange flex items-center justify-center mb-3">
+                              <Camera className="w-6 h-6" />
+                            </div>
+                            <h4 className="text-sm font-bold text-white uppercase font-lemon-milk mb-1">
+                              Aucune photo pour l&apos;instant
+                            </h4>
+                            <p className="text-xs text-white/50 font-light max-w-md mx-auto mb-4">
+                              Le salon est prêt. Prenez ou sélectionnez une photo de votre révision, du Lab ou de votre pause café pour l&apos;épingler ici !
+                            </p>
+                            <button
+                              onClick={() => setIsAddingMoment(true)}
+                              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold uppercase font-lemon-milk shadow-md hover:bg-brand-orange/90 transition-all cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              Ajouter la première photo
+                            </button>
                           </div>
                         ) : (
                           spaceMoments.map((moment) => (
@@ -1771,7 +2290,7 @@ export default function StudyHubPage() {
                                 </p>
                               </div>
 
-                              {/* Footer metadata & Like button */}
+                              {/* Footer metadata & Like/Delete buttons */}
                               <div className="flex items-center justify-between border-t border-slate-200 pt-3 mt-3 text-[11px] text-slate-500">
                                 <div className="flex flex-col">
                                   <span className="font-semibold text-slate-700 text-[10px] uppercase font-lemon-milk">
@@ -1780,14 +2299,23 @@ export default function StudyHubPage() {
                                   <span className="text-[9px] text-slate-400">{moment.timeAgo}</span>
                                 </div>
 
-                                <button
-                                  onClick={() => handleLikeMoment(moment.id)}
-                                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold transition-all cursor-pointer shadow-xs active:scale-125"
-                                  title="J'aime ce moment"
-                                >
-                                  <Heart className="w-3.5 h-3.5 fill-rose-500" />
-                                  <span>{moment.likes}</span>
-                                </button>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => handleDeleteMoment(moment.id)}
+                                    className="p-1.5 rounded-full hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
+                                    title="Supprimer cette photo"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleLikeMoment(moment.id)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold transition-all cursor-pointer shadow-xs active:scale-125"
+                                    title="J'aime ce moment"
+                                  >
+                                    <Heart className="w-3.5 h-3.5 fill-rose-500" />
+                                    <span>{moment.likes}</span>
+                                  </button>
+                                </div>
                               </div>
                             </motion.div>
                           ))
@@ -1854,7 +2382,7 @@ export default function StudyHubPage() {
                   </button>
 
                   <div className="p-4 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 text-xs text-white/80 leading-relaxed font-light">
-                    ⚡ <strong>Instants Partagés :</strong> Les photos et souvenirs ajoutés dans cette salle sont visibles instantanément par tous les coworkers connectés !
+                    ⚡ <strong>Données Persistantes :</strong> Les objectifs et notes de cette salle sont sauvegardés en direct et restent accessibles même en actualisant la page.
                   </div>
                 </div>
 
@@ -1863,107 +2391,7 @@ export default function StudyHubPage() {
           </motion.div>
         )}
 
-        {/* TAB 4: SOUNDS & AMBIENT AUDIO ENGINE */}
-        {false && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto w-full bg-[#101624] border border-white/10 rounded-3xl p-6 sm:p-10 space-y-8"
-          >
-            <div className="text-center max-w-xl mx-auto space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-orange font-lemon-milk inline-flex items-center gap-2">
-                <Headphones className="w-4 h-4" />
-                Générateur d'Ambiance Sonore
-              </span>
-              <h3 className="text-2xl font-bold uppercase tracking-wider text-white font-lemon-milk">
-                Atmosphère Focus Immédiate
-              </h3>
-              <p className="text-xs text-white/70 font-light leading-relaxed">
-                Mélangez différents paysages sonores synthétisés en direct par votre navigateur pour isoler votre esprit du bruit extérieur.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { key: "rain", name: "Pluie Douce sur Vitre", icon: "🌧️", desc: "Fréquences roses relaxantes" },
-                { key: "coffee", name: "Café de Spécialité CTRL S", icon: "☕", desc: "Murmure feutré & ambiance barista" },
-                { key: "waves", name: "Vagues Océaniques", icon: "🌊", desc: "Oscillation apaisante pour le flux" },
-                { key: "whitenoise", name: "Bruit Blanc & Isolation", icon: "💨", desc: "Masquage total des voix" },
-                { key: "alpha", name: "Ondes Alpha 10Hz (Binaural)", icon: "🧠", desc: "Fréquence d'onde d'apprentissage" },
-              ].map((sound) => {
-                const isPlaying = soundStates[sound.key].active;
-                const volume = soundStates[sound.key].volume;
-
-                return (
-                  <div
-                    key={sound.key}
-                    className={`p-5 rounded-2xl border transition-all duration-300 ${
-                      isPlaying
-                        ? "bg-brand-orange/15 border-brand-orange/50 shadow-lg shadow-brand-orange/10"
-                        : "bg-white/5 border-white/10 hover:border-white/20"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{sound.icon}</span>
-                        <div>
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-white font-lemon-milk">
-                            {sound.name}
-                          </h4>
-                          <p className="text-[11px] text-white/60 font-light">{sound.desc}</p>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => toggleSound(sound.key)}
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
-                          isPlaying
-                            ? "bg-brand-orange text-white shadow-md scale-105"
-                            : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
-                        }`}
-                      >
-                        {isPlaying ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                      </button>
-                    </div>
-
-                    {/* Volume Slider */}
-                    <div className="flex items-center gap-3 pt-2">
-                      <span className="text-[10px] text-white/50 font-lemon-milk uppercase">Volume</span>
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.05"
-                        value={volume}
-                        onChange={(e) => updateSoundVolume(sound.key, parseFloat(e.target.value))}
-                        className="flex-grow h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-orange"
-                      />
-                      <span className="text-[10px] font-mono text-white/70 w-8 text-right">
-                        {Math.round(volume * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="flex justify-center pt-4">
-              <button
-                onClick={() => {
-                  if (audioEngine) audioEngine.stopAll();
-                  const reset = { ...soundStates };
-                  Object.keys(reset).forEach((k) => (reset[k].active = false));
-                  setSoundStates(reset);
-                }}
-                className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider transition-all font-lemon-milk cursor-pointer"
-              >
-                Couper Tous les Sons
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* TAB 5: SCRATCHPAD & QUICK NOTES */}
+        {/* TAB 4: SCRATCHPAD & QUICK NOTES */}
         {activeTab === "notes" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -2043,6 +2471,7 @@ export default function StudyHubPage() {
                   src={selectedLightboxImage.image}
                   alt={selectedLightboxImage.title}
                   fill
+                  unoptimized
                   className="object-contain"
                 />
               </div>
@@ -2066,14 +2495,105 @@ export default function StudyHubPage() {
                     <span className="font-semibold text-white block">{selectedLightboxImage.author}</span>
                     <span className="text-[10px]">{selectedLightboxImage.timeAgo}</span>
                   </div>
-                  <button
-                    onClick={() => handleLikeMoment(selectedLightboxImage.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-400 font-bold hover:bg-rose-500/30 transition-colors cursor-pointer"
-                  >
-                    <Heart className="w-4 h-4 fill-rose-400" />
-                    <span>{selectedLightboxImage.likes}</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleDeleteMoment(selectedLightboxImage.id)}
+                      className="p-2 rounded-full bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
+                      title="Supprimer cette photo"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleLikeMoment(selectedLightboxImage.id)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-400 font-bold hover:bg-rose-500/30 transition-colors cursor-pointer"
+                    >
+                      <Heart className="w-4 h-4 fill-rose-400" />
+                      <span>{selectedLightboxImage.likes}</span>
+                    </button>
+                  </div>
                 </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Backend & Cloud Database Info Modal */}
+      <AnimatePresence>
+        {showBackendInfoModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center overflow-y-auto"
+          >
+            <div className="relative max-w-2xl w-full bg-[#101624] border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl text-left space-y-5 my-8">
+              <button
+                onClick={() => setShowBackendInfoModal(false)}
+                className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className={`p-3 rounded-2xl ${backendMode === "cloud_supabase" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
+                  <Database className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wider text-white font-lemon-milk">
+                    Base de Données & Multi-Ordinateurs
+                  </h3>
+                  <p className="text-xs text-white/60">
+                    Statut actuel :{" "}
+                    <strong className={backendMode === "cloud_supabase" ? "text-emerald-400" : "text-amber-400"}>
+                      {backendMode === "cloud_supabase"
+                        ? "Connecté au Cloud Supabase (Partage universel actif)"
+                        : "Mode Local (Actif sur cette machine)"}
+                    </strong>
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/80 space-y-2 leading-relaxed">
+                <p>
+                  Pour que les photos, les notes et les tâches s&apos;affichent <strong>instantanément sur tous les ordinateurs distants</strong> (et sur les téléphones), une base de données cloud (Supabase) est intégrée dans le code.
+                </p>
+                <p className="text-brand-orange font-medium">
+                  Le code est 100% prêt. Il vous suffit d&apos;ajouter vos identifiants gratuits dans le fichier <code className="bg-black/50 px-2 py-0.5 rounded text-white font-mono">.env.local</code>.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase text-brand-orange font-lemon-milk">
+                  Comment connecter Supabase en 3 étapes :
+                </h4>
+                <ol className="text-xs text-white/70 space-y-2 list-decimal list-inside leading-relaxed">
+                  <li>
+                    Créez un projet gratuit sur{" "}
+                    <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-brand-orange underline">
+                      supabase.com
+                    </a>.
+                  </li>
+                  <li>
+                    Dans <strong>SQL Editor</strong> sur Supabase, collez le contenu du fichier <code className="bg-black/50 px-1.5 py-0.5 rounded text-white font-mono">supabase-schema.sql</code> (situé à la racine du projet) et cliquez sur <strong>Run</strong>.
+                  </li>
+                  <li>
+                    Créez un fichier <code className="bg-black/50 px-1.5 py-0.5 rounded text-white font-mono">.env.local</code> avec votre URL et votre clé :
+                    <pre className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-[11px] text-emerald-400 font-mono overflow-x-auto">
+{`NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon_publique`}
+                    </pre>
+                  </li>
+                </ol>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => setShowBackendInfoModal(false)}
+                  className="px-6 py-2.5 rounded-xl bg-brand-orange text-white text-xs font-bold uppercase font-lemon-milk shadow-md cursor-pointer hover:bg-brand-orange/90 transition-all"
+                >
+                  Fermer
+                </button>
               </div>
             </div>
           </motion.div>
@@ -2082,7 +2602,7 @@ export default function StudyHubPage() {
 
       {/* Footer info bar */}
       <footer className="border-t border-white/10 bg-[#0a0e17] py-6 px-6 text-center text-xs text-white/50 font-light">
-        <p>© {new Date().getFullYear()} Control and Study (CTRL S) Monastir — Espace d'Étude & Coworking.</p>
+        <p>© {new Date().getFullYear()} Control and Study (CTRL S) Monastir — Espace d&apos;Étude & Coworking.</p>
       </footer>
 
     </div>

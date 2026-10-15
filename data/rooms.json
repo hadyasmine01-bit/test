@@ -1,0 +1,72 @@
+{
+  "PUBLIC": {
+    "roomId": "PUBLIC",
+    "roomName": "Salon Public Général CTRL S",
+    "participants": [
+      {
+        "id": "user_exafjg4",
+        "name": "Étudiant CTRL S",
+        "role": "Faculté Dentaire Monastir",
+        "status": "En ligne",
+        "avatar": "ÉT",
+        "color": "bg-brand-orange",
+        "lastSeen": 1792062294677
+      }
+    ],
+    "stickyNotes": [
+      {
+        "id": 1,
+        "author": "Équipe CTRL S",
+        "content": "Bienvenue dans le Salon Public ! Partagez vos mémos de révision et encouragez vos camarades.",
+        "color": "orange",
+        "date": "Aujourd'hui"
+      },
+      {
+        "id": 2,
+        "author": "Youssef (Monastir)",
+        "content": "Session QCMs Anatomie dentaire cet après-midi au Lab ! Objectif 100% de bonnes réponses.",
+        "color": "blue",
+        "date": "Aujourd'hui"
+      }
+    ],
+    "sharedTasks": [
+      {
+        "id": 1,
+        "text": "Réviser les 50 QCMs clés du semestre",
+        "done": false,
+        "tag": "Examen",
+        "priority": "urgent",
+        "assignedTo": "Groupe Dentaire"
+      },
+      {
+        "id": 2,
+        "text": "Fiches de synthèse Pharmacologie & Posologies",
+        "done": true,
+        "tag": "Révision",
+        "priority": "normal",
+        "assignedTo": "Sarra & Amine"
+      }
+    ],
+    "spaceMoments": [
+      {
+        "id": 1792062230567,
+        "title": "bac",
+        "caption": "aa",
+        "image": "/uploads/1792062230497_bac.jpg",
+        "author": "Étudiant CTRL S",
+        "timeAgo": "À l'instant",
+        "likes": 1,
+        "zoneTag": "The Lab"
+      }
+    ],
+    "syncedTimer": {
+      "isRunning": false,
+      "mode": "pomodoro",
+      "timeLeft": 1500,
+      "durationSecs": 1500,
+      "lastSyncTimestamp": 1792060399273,
+      "updatedBy": "System"
+    },
+    "lastUpdated": 1792062294677
+  }
+}

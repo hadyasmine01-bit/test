@@ -1,18 +1,5 @@
 import type { Metadata } from "next";
-import { League_Spartan, Outfit } from "next/font/google";
 import "./globals.css";
-
-const leagueSpartan = League_Spartan({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-league-spartan",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-outfit",
-});
 
 export const metadata: Metadata = {
   title: "Coworking Space : Control and Study",
@@ -52,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${leagueSpartan.variable} ${outfit.variable}`}>
+    <html lang="en">
       <body className="font-outfit antialiased">
         {children}
       </body>

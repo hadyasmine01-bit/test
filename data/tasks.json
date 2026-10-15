@@ -1,0 +1,22 @@
+{
+  "user_exafjg4": [
+    {
+      "id": 1,
+      "userId": "user_exafjg4",
+      "text": "Définir mes objectifs de séance de révision",
+      "done": false,
+      "tag": "Révision",
+      "priority": "urgent",
+      "createdAt": "2026-10-15T10:36:30.214Z"
+    },
+    {
+      "id": 2,
+      "userId": "user_exafjg4",
+      "text": "Compléter un premier cycle Pomodoro de 25 minutes",
+      "done": false,
+      "tag": "Examen",
+      "priority": "normal",
+      "createdAt": "2026-10-15T10:36:30.214Z"
+    }
+  ]
+}
