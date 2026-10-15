@@ -724,6 +724,9 @@ export default function StudyHubPage() {
       if (selectedMomentFile) {
         // Compress client-side before sending
         const compressedDataUrl = await compressImage(selectedMomentFile);
+        if (!compressedDataUrl.startsWith("data:image/")) {
+          throw new Error("Impossible de lire cette image. Essayez un fichier JPG, PNG ou WebP.");
+        }
 
         const res = await fetch("/api/upload", {
           method: "POST",
@@ -734,11 +737,11 @@ export default function StudyHubPage() {
           }),
         });
 
+        const data = await res.json().catch(() => null);
         if (!res.ok) {
-          throw new Error("Erreur de téléversement vers le serveur.");
+          throw new Error(data?.error || `Le serveur a refusé l’image (HTTP ${res.status}).`);
         }
 
-        const data = await res.json();
         if (!data.success || !data.url) {
           throw new Error(data.error || "Échec de l'enregistrement de l'image.");
         }

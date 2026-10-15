@@ -6,6 +6,7 @@ import { uploadImageToSupabase, isSupabaseConfigured } from "@/lib/supabase";
 export const runtime = "nodejs";
 
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 function ensureUploadsDir() {
   if (!fs.existsSync(UPLOADS_DIR)) {
@@ -82,6 +83,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (fileBuffer.length > MAX_UPLOAD_BYTES) {
+      return NextResponse.json(
+        { success: false, error: "L’image compressée dépasse la limite de 10 Mo." },
+        { status: 413 }
+      );
+    }
+
     // 1. Try Supabase Cloud Storage first if configured
     if (isSupabaseConfigured) {
       const cloudUrl = await uploadImageToSupabase(fileBuffer, fileName, mimeType);
@@ -112,7 +120,12 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Error in /api/upload:", error);
     return NextResponse.json(
-      { success: false, error: "Erreur lors du téléversement de l'image." },
+      {
+        success: false,
+        error: error instanceof Error
+          ? `Échec de l’enregistrement de l’image : ${error.message}`
+          : "Échec de l’enregistrement de l’image.",
+      },
       { status: 500 }
     );
   }
